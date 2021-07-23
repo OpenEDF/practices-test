@@ -1,0 +1,103 @@
+diff --git a/src/target/riscv/riscv.c b/src/target/riscv/riscv.c
+index 8cfb2275a..db9ec1dbe 100644
+--- a/src/target/riscv/riscv.c
++++ b/src/target/riscv/riscv.c
+@@ -2295,6 +2295,9 @@ COMMAND_HANDLER(riscv_set_prefer_sba)
+ 	RISCV_INFO(r);
+ 	bool prefer_sba;
+ 	LOG_WARNING("`riscv set_prefer_sba` is deprecated. Please use `riscv set_mem_access` instead.");
++
++	LOG_USER("\r\nThis is a test from Macro wuqi tech.\r\n");
++
+ 	if (CMD_ARGC != 1) {
+ 		LOG_ERROR("Command takes exactly 1 parameter");
+ 		return ERROR_COMMAND_SYNTAX_ERROR;
+@@ -2320,6 +2323,67 @@ COMMAND_HANDLER(riscv_set_prefer_sba)
+ 	return ERROR_OK;
+ }
+ 
++/* wuqi test command function ==> print "Hello WuQi!" */
++COMMAND_HANDLER(riscv_wuqi_test)
++{
++	if (CMD_ARGC != 1) {
++		LOG_ERROR("Command takes exactly 1 parameter");
++		return ERROR_COMMAND_SYNTAX_ERROR;
++	}
++
++	bool test_value;
++	COMMAND_PARSE_ON_OFF(CMD_ARGV[0], test_value);
++
++	if (test_value) {
++		LOG_USER("\r\n[OK]	Hello WuQi! input: on.\r\n");
++	}
++	else {
++		LOG_USER("\r\n[OK]	Hello WuQi! input: off.\r\n");
++	}
++	return ERROR_OK;
++}
++
++/* print the debug logo */
++COMMAND_HANDLER(riscv_wuqi_logo)
++{
++	if (CMD_ARGC != 1) {
++		LOG_ERROR("Command takes exactly 1 parameter");
++		return ERROR_COMMAND_SYNTAX_ERROR;
++	}
++
++	bool test_value;
++	COMMAND_PARSE_ON_OFF(CMD_ARGV[0], test_value);
++
++	if (test_value) {
++		LOG_USER("\r       																				\n\
++         .																                                \n\
++        / \\                     1. Mixing signed and unsigned integers in arithmetic operations        \n\
++        | |                     2. Overstepping Array Boundaries                                        \n\
++        |.|                     3. Missing out the Base Condition in Recursive Function                 \n\
++        |.|                     4. Using character constants instead of string literals, and vice versa \n\
++        |:|      __             5. Floating point literals are of type double by default                \n\
++      ,_|:|_,   /  )            6. Forgetting to free memory                                            \n\
++        (Oo    / _I_            7. Adding a semicolon to a #define                                      \n\
++         +\\ \\  || __|           8. Be careful with semicolons                                         \n\
++            \\ \\||___|                                                                                 \n\
++              \\ /.:.\\-\\         9. Mistakenly writing = instead of == when comparing                 \n\
++               |.:. /-----\\     10. Copying too much                                                   \n\
++               |___|::oOo::|                                                                            \n\
++               /   |:<_T_>:|    11. Macros are simple string replacements                               \n\
++              |_____\\ ::: /                                                                            \n\
++               | |  \\ \\:/       [http://www.wuqi-tech.com/]                                           \n\
++               | |   | |        Buletooth: Beetle                                                       \n\
++       [debug] \\ /   | \\__      WiFi: Hawk Kiwi                                                       \n\
++               / |   \\____\\                                                                           \n\
++               `='                                                                                      \n\
++             =================================                                                          \n");
++	}
++	else{
++		LOG_USER("\r\n[OK] logo disable display.\r\n");
++	}
++	return ERROR_OK;
++}
++
+ COMMAND_HANDLER(riscv_set_mem_access)
+ {
+ 	struct target *target = get_current_target(CMD_CTX);
+@@ -3219,6 +3283,20 @@ static const struct command_registration riscv_exec_command_handlers[] = {
+ 		.help = "Control dcsr.ebreaku. When off, U-mode ebreak instructions "
+ 			"don't trap to OpenOCD. Defaults to on."
+ 	},
++	{
++		.name = "wuqi_test",
++		.handler = riscv_wuqi_test,
++		.mode = COMMAND_ANY,
++		.usage = "on|off",
++		.help = "Wuqi Test."
++	},
++	{
++		.name = "wuqi_logo",
++		.handler = riscv_wuqi_logo,
++		.mode = COMMAND_ANY,
++		.usage = "on|off",
++		.help = "Wuqi Logo display."
++	},
+ 	COMMAND_REGISTRATION_DONE
+ };
+ 
