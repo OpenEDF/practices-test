@@ -24,26 +24,10 @@
 
 #define MAX_HTTP_RECV_BUFFER 512
 #define MAX_HTTP_OUTPUT_BUFFER 2048
-static const char *TAG = "HTTP_CLIENT";
+#define DEBUG_LOG
+static const char *TAG = "github";
 
-/* Root cert for howsmyssl.com, taken from howsmyssl_com_root_cert.pem
-
-   The PEM file was extracted from the output of this command:
-   openssl s_client -showcerts -connect www.howsmyssl.com:443 </dev/null
-
-   The CA root cert is the last cert given in the chain of certs.
-
-   To embed it in the app binary, the PEM file is named
-   in the component.mk COMPONENT_EMBED_TXTFILES variable.
-*/
-extern const char howsmyssl_com_root_cert_pem_start[] asm("_binary_howsmyssl_com_root_cert_pem_start");
-extern const char howsmyssl_com_root_cert_pem_end[]   asm("_binary_howsmyssl_com_root_cert_pem_end");
-
-extern const char postman_root_cert_pem_start[] asm("_binary_postman_root_cert_pem_start");
-extern const char postman_root_cert_pem_end[]   asm("_binary_postman_root_cert_pem_end");
-
-
-esp_err_t _http_event_handler(esp_http_client_event_t *evt)
+esp_err_t http_event_handler(esp_http_client_event_t *evt)
 {
     static char *output_buffer;  // Buffer to store response of http request from event handler
     static int output_len;       // Stores number of bytes read
@@ -115,15 +99,31 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 
 static void https_with_url(void)
 {
-   ESP_LOGI(TAG, "================================");
+	/* config https post information */
     esp_http_client_config_t config = {
-        .url = "https://api.github.com/users/OpenEDF",
-        .event_handler = _http_event_handler,
+        .url = "https://api.github.com/graphql",
+		.host = "api.github.com",
+        .event_handler = http_event_handler,
         .crt_bundle_attach = esp_crt_bundle_attach,
     };
+
+	/* POST query data */
+	const char *post_data = "{\"query\":\"query {user(login: \\\"OpenEDF\\\") {contributionsCollection(from: \\\"2021-07-23T00:00:01+08:00\\\", to: \\\"2021-07-23T23:59:59+08:00\\\") {contributionCalendar {weeks {contributionDays {color date contributionCount }}}}}}\"}";
+#ifdef DEBUG_LOG
+	ESP_LOGI(TAG, "HTTP POST DATA: %s\n", post_data);
+#endif
+
+	/* POST url configuration */
     esp_http_client_handle_t client = esp_http_client_init(&config);
+	esp_http_client_set_method(client, HTTP_METHOD_POST);
+	esp_http_client_set_header(client, "Content-Type", "application/json");
+	esp_http_client_set_header(client, "Authorization", "Bearer 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");
+
+	/* write post query and execute client */
+	esp_http_client_set_post_field(client, post_data, strlen(post_data));
     esp_err_t err = esp_http_client_perform(client);
 
+	/* check the execute reault */
     if (err == ESP_OK) {
         ESP_LOGI(TAG, "HTTPS Status = %d, content_length = %d",
                 esp_http_client_get_status_code(client),
@@ -131,8 +131,9 @@ static void https_with_url(void)
     } else {
         ESP_LOGE(TAG, "Error perform http request %s", esp_err_to_name(err));
     }
+
+	/* disconnect and clean client hander resourse */
     esp_http_client_cleanup(client);
-   ESP_LOGI(TAG, "================================");
 }
 
 static void http_test_task(void *pvParameters)
