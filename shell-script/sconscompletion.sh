@@ -8,7 +8,7 @@ project=('unit_test   unit_test_fpga    unit_test_os    unit_test_os_fpga
 		  sbl_fpga    fw_updater        fw_updater_fpga wifi_dtest	
 		  wifi_dtest_phy_v2	wifi_dtest_phy_v2_fpga
 		  phy_v2_test		phy_v2_test_fpga
-		  rom_lib 			rom_lib_test')
+		  rom_lib 			rom_lib_test	rom_lib_test_fpga')
 
 # auto completion function and programmable generated
 # $1 is name of the command 

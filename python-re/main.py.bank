@@ -1,0 +1,20 @@
+import re
+oldtext = []
+with open('text.txt') as files:
+    content= files.readlines()
+    oldtext.append(content)
+
+print(oldtext)
+
+newtext = []
+for text in oldtext:
+    text = str(text)
+    match = re.findall(r"cdc=(\d+) ",text)
+    newtext.append(match)
+    print(match)
+
+add = '\n'
+wfile = open('macro.txt', 'w')
+for line in newtext:
+    wfile.write(add.join(line))
+wfile.close()
