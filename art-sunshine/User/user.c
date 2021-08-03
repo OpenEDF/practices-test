@@ -107,8 +107,9 @@ void System_Init(void)
 	PVD_Config(PVD_LEVEL_2_7);
 	PDEBUG("system PVD Configured.\n");
 	
-	/* Motor PWM Init */
-	test_motor();
+	/* system motor pwm Init */
+	system_motor_init(MOTOR_1000HZ_PARAMEMTERS);
+	motor_test();
 
 	/* system parameters Initalized */
 	Flash_LoadWorkParam();

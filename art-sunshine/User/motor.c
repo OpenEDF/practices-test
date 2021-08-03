@@ -26,6 +26,7 @@
 #include "motor.h"
 #include "stm32f4xx_gpio.h"
 #include "timer.h"
+#include "arm_math.h"
 
 /** @addtogroup GYRO_Driver
   * @{
@@ -41,8 +42,6 @@
 /* Private define ------------------------------------------------------------*/
 
 /* Private macro -------------------------------------------------------------*/
-/* motor work period and pwm duty cycle */
-#define MOTOR_1000HZ_PARAMEMTERS	800, 400	/* period and duty cycle */
 
 /* Private variables ---------------------------------------------------------*/
 motor_operation_t motor_opr[POINTER_MAX_MOTOR];
@@ -576,28 +575,45 @@ void system_motor_init(uint16_t motor_pwm_period, uint16_t motor_pwm_pluse)
 }
 
 /**
-  * @function  test_motor
-  * @brief     motor woek test.
+  * @function  control_motor_run
+  * @brief     control motor run by the angle and direction.
+  * @param[in] motor_t: the motor will be control.
+  * @param[in] angle: Control the motor rotation to the angle.
+  * @param[in] dir: motor rarotion direction.
   * @retval    None.
   */
-void test_motor(void)
+void control_motor_run(motor_operation_t *motor_t, float32_t *angle, motor_dircetion_m dir)
+{
+	float32_t additi = PER_DEGREE_PLUSES_NUMBER;
+	float32_t pluse_count;
+	uint32_t temp_count;
+	
+	/* calculater the pluse counter */
+	arm_mult_f32(angle, &additi, &pluse_count, 1);
+	temp_count = (uint32_t)pluse_count;
+	motor_work_by_pluse_count(motor_t, temp_count, dir);	
+}
+
+/**
+  * @function  motor_test
+  * @brief     motor basic test.
+  * @param[in] None.
+  * @retval    None.
+  */
+void motor_test(void)
 {
 	motor_operation_t *motor_t = NULL;
+	motor_type_m index;
+	float32_t angle = 1.82f;
 
-	system_motor_init(MOTOR_1000HZ_PARAMEMTERS);
-	
-	motor_t = &motor_opr[POINTER_A_MOTOR];
-	motor_work_by_pluse_count(motor_t, 4000, MOTOR_DIR_OPPOSITE);	
-	
-	motor_t = &motor_opr[POINTER_B_MOTOR];
-	motor_work_by_pluse_count(motor_t, 800, MOTOR_DIR_OPPOSITE);
-
-	motor_t = &motor_opr[POINTER_C_MOTOR];
-	motor_work_by_pluse_count(motor_t, 4000, MOTOR_DIR_POSITIVER);	
-	
-	motor_t = &motor_opr[POINTER_D_MOTOR];
-	motor_work_by_pluse_count(motor_t, 800, MOTOR_DIR_OPPOSITE);
+	/* calculater the pluse counter */
+	for (index = POINTER_A_MOTOR; index < POINTER_MAX_MOTOR; index++)
+	{
+		motor_t = &motor_opr[index];
+		control_motor_run(motor_t, &angle, MOTOR_DIR_POSITIVER);	
+	}
 }
+
 /**
   * @}
   */

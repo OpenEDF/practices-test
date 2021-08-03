@@ -120,11 +120,19 @@ extern motor_operation_t motor_opr[POINTER_MAX_MOTOR];
 #define MOTOR_PLUSE_12800_REV		64
 #define MOTOR_PLUSE_25600_REV		128
 #define MOTOR_PLUSE_51200_REV		256
+
 #define MOTOR_REDUCTION_RATION		20			/* motor reduction ratio */ 
 /* WARNING:
  * counter = (new_angle - old_angle) / 1.8
  * pluse counter = counter * MOTOR_PLUSE_X_REV *  MOTOR_REDUCTION_RATION
  */
+ /* motor work period and pwm duty cycle */
+#define MOTOR_1000HZ_PARAMEMTERS	800, 400				/* period and duty cycle */
+#define CURRENT_SELECT_PLUSE_REV	MOTOR_PLUSE_800_REV		/* current pluse rev */
+//#define PER_DEGREE_PLUSES_NUMBER	(MOTOR_REDUCTION_RATION * CURRENT_SELECT_PLUSE_REV)
+/* the number of pulses per degree */
+#define PER_DEGREE_PLUSES_NUMBER    80.0f    /* 20 * 4 = 80, reduce CPU */
+
 
 /* Exported functions --------------------------------------------------------*/
 void system_motor_init(uint16_t motor_pwm_period, uint16_t motor_pwm_pluse);
@@ -135,7 +143,8 @@ uint32_t get_pluse_count(motor_operation_t *motor_t);
 motor_state_m get_motor_state(motor_operation_t *motor_t);
 motor_dircetion_m get_motor_direction(motor_operation_t *motor_t);
 void motor_work_by_pluse_count(motor_operation_t *motor_t, uint32_t pluse_count, motor_dircetion_m dir);
-void test_motor(void);
+void control_motor_run(motor_operation_t *motor_t, float32_t *angle, motor_dircetion_m dir);
+void motor_test(void);
 #ifdef __cplusplus
 }
 #endif
