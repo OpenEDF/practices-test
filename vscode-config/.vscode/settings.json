@@ -1,0 +1,88 @@
+{
+    "files.defaultLanguage": "c", // ctrl+N新建文件后默认的语言
+    "editor.formatOnType": true, // 输入时就进行格式化，默认触发字符较少，分号可以触发
+    "editor.snippetSuggestions": "top", // snippets代码优先显示补全
+    "code-runner.runInTerminal": true, // 设置成false会在“输出”中输出，无法输入
+    "code-runner.executorMap": {
+        "c": "cd $dir && gcc $fileName -o $fileNameWithoutExt.exe -Wall -g -Og -std=c11 && $dir$fileNameWithoutExt",
+        "cpp": "cd $dir && g++ $fileName -o $fileNameWithoutExt.exe -Wall -g -Og -std=c++17 && $dir$fileNameWithoutExt"
+    },
+    // 设置code runner的命令行
+    "code-runner.saveFileBeforeRun": true, // run code前保存
+    "code-runner.preserveFocus": true, // 若为false，run code后光标会聚焦到终端上。如果需要频繁输入数据可设为false
+    "code-runner.clearPreviousOutput": true, // 每次run code前清空属于code runner的终端消息
+    "C_Cpp.clang_format_sortIncludes": true, // 格式化时调整include的顺序（按字母排序）
+    "C_Cpp.intelliSenseEngine": "Default", // 可以为Default或Tag Parser，后者较老，功能较简单。具体差别参考cpptools扩展文档
+    "C_Cpp.autocomplete": "Default", // 因为有clang的补全，所以关掉
+    "workbench.colorTheme": "One Dark Pro", // 主题
+    "files.trimTrailingWhitespace": true, // 保存时，删除每一行末尾的空格
+    "workbench.colorCustomizations": {
+        "activityBar.foreground": "#33fff5", // 自定义颜色
+        "terminal.foreground": "#37FF13",
+    }, // 如果你不用git，我建议你关闭它
+    "editor.minimap.enabled": false, // 我个人不用minimap，就是右边那个东西
+    "editor.dragAndDrop": false, // 选中文字后，可以拖动它们调整位置。我是不需要
+    "files.autoGuessEncoding": true, // 启用后，会在打开文件时尝试猜测字符集编码
+    "editor.tabCompletion": "on",
+    "files.associations": {
+        "iostream": "cpp"
+    }, //开启代码补全
+    "better-comments.tags": [
+        {
+            "tag": "!",
+            "color": "#FF2D00",
+            "strikethrough": false,
+            "underline": false,
+            "backgroundColor": "transparent",
+            "bold": false,
+            "italic": false
+        },
+        {
+            "tag": "?",
+            "color": "#3498DB",
+            "strikethrough": false,
+            "underline": false,
+            "backgroundColor": "transparent",
+            "bold": false,
+            "italic": false
+        },
+        {
+            "tag": "//",
+            "color": "#474747",
+            "strikethrough": true,
+            "underline": false,
+            "backgroundColor": "transparent",
+            "bold": false,
+            "italic": false
+        },
+        {
+            "tag": "TODO",
+            "color": "#FF8C00",
+            "strikethrough": false,
+            "underline": false,
+            "backgroundColor": "transparent",
+            "bold": false,
+            "italic": false
+        },
+        {
+            "tag": "*",
+            "color": "#98C379",
+            "strikethrough": false,
+            "underline": false,
+            "backgroundColor": "transparent",
+            "bold": false,
+            "italic": false
+        },
+        {
+            "tag": "BUG",
+            "color": "#00FF00",
+            "strikethrough": false,
+            "underline": false,
+            "backgroundColor": "transparent",
+            "bold": false,
+            "italic": false
+        }
+    ],
+    "clang-format.executable": "E:\\Tools\\clang-formatclang-format.exe",
+    "editor.formatOnSave": true,
+}
