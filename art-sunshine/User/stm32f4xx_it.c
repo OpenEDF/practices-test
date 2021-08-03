@@ -379,6 +379,58 @@ void EXTI0_IRQHandler(void)
 }
 
 /**
+  * @function	EXTI1_IRQHandler
+  * @brief		This function handles EXTI1_IRQHandler interrupt request.
+  * @param[in]	None.
+  * @retval 	None.
+  */
+void EXTI1_IRQHandler(void)
+{
+	/* check the interrupt */
+	if(EXTI_GetITStatus(EXTI_Line1) != RESET) 
+	{
+		PDEBUG("System Key EXTI0_IRQHandler runing...\n");
+		/* Clear the TI */
+		EXTI_ClearITPendingBit(EXTI_Line1); 
+	}
+}
+
+
+/**
+  * @function	EXTI2_IRQHandler
+  * @brief		This function handles EXTI2_IRQHandler interrupt request.
+  * @param[in]	None.
+  * @retval 	None.
+  */
+void EXTI2_IRQHandler(void)
+{
+	/* check the interrupt */
+	if(EXTI_GetITStatus(EXTI_Line2) != RESET) 
+	{
+		PDEBUG("System Key EXTI2_IRQHandler runing...\n");
+		/* Clear the TI */
+		EXTI_ClearITPendingBit(EXTI_Line2); 
+	}
+}
+
+/**
+  * @function	EXTI3_IRQHandler
+  * @brief		This function handles EXTI3_IRQHandler interrupt request.
+  * @param[in]	None.
+  * @retval 	None.
+  */
+void EXTI3_IRQHandler(void)
+{
+	/* check the interrupt */
+	if(EXTI_GetITStatus(EXTI_Line3) != RESET) 
+	{
+		PDEBUG("System Key EXTI3_IRQHandler runing...\n");
+		/* Clear the TI */
+		EXTI_ClearITPendingBit(EXTI_Line3); 
+	}
+}
+
+/**
   * @function	PVD_IRQHandler
   * @brief		This function handles PVD_IRQHandler interrupt request.
   * @param[in]	None.

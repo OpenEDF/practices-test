@@ -27,6 +27,7 @@
 #include "stm32f4xx_gpio.h"
 #include "timer.h"
 #include "arm_math.h"
+#include "led.h"
 
 /** @addtogroup GYRO_Driver
   * @{
@@ -62,6 +63,10 @@ static void motor_c_work_state(motor_state_m state);
 static void motor_d_work_state(motor_state_m state);
 static void motor_roration_direction(motor_type_m motor, motor_dircetion_m direction);
 static void motor_init(motor_operation_t *motor_t, motor_type_m motor_local, uint16_t motor_pwm_period, uint16_t motor_pwm_pluse);
+static void motor_a_location_exti_config(void);
+static void motor_b_location_exti_config(void);
+static void motor_c_location_exti_config(void);
+static void motor_d_location_exti_config(void);
 
 /** @defgroup MOTOR_Functions
   * @{
@@ -457,6 +462,161 @@ static void motor_init(motor_operation_t *motor_t, motor_type_m motor_local, uin
 }
 
 /**
+  * @function   motor_a_location_exti_config
+  * @brief      configuration the wxit pin as motor a control wire.
+  * @param[in]  None
+  * @retval     None.
+  */
+static void motor_a_location_exti_config(void)
+{
+	EXTI_InitTypeDef EXTI_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	/* RCC Enable */
+	RCC_AHB1PeriphClockCmd(MOTORA_INT_GPIO_CLK, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+	
+	/* NVIC Config */
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+	NVIC_InitStructure.NVIC_IRQChannel = MOTORA_INT_EXTI_IRQ;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 10;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+	/* GPIO Config */
+	Config_GPIO_IN(MOTORA_INT_GPIO_PORT, MOTORA_INT_GPIO_PIN);
+	SYSCFG_EXTILineConfig(MOTORA_INT_EXTI_PORTSOURCE, MOTORA_INT_EXTI_PINSOURCE);
+
+	/* EXIT Config */
+	EXTI_InitStructure.EXTI_Line = MOTORA_INT_EXTI_LINE;
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&EXTI_InitStructure);
+}
+
+/**
+  * @function   motor_b_location_exti_config
+  * @brief      configuration the wxit pin as motor a control wire.
+  * @param[in]  None
+  * @retval     None.
+  */
+static void motor_b_location_exti_config(void)
+{
+	EXTI_InitTypeDef EXTI_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	/* RCC Enable */
+	RCC_AHB1PeriphClockCmd(MOTORB_INT_GPIO_CLK, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+	
+	/* NVIC Config */
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+	NVIC_InitStructure.NVIC_IRQChannel = MOTORB_INT_EXTI_IRQ;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 10;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+	/* GPIO Config */
+	Config_GPIO_IN(MOTORB_INT_GPIO_PORT, MOTORB_INT_GPIO_PIN);
+	SYSCFG_EXTILineConfig(MOTORB_INT_EXTI_PORTSOURCE, MOTORB_INT_EXTI_PINSOURCE);
+
+	/* EXIT Config */
+	EXTI_InitStructure.EXTI_Line = MOTORB_INT_EXTI_LINE;
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&EXTI_InitStructure);
+}
+
+/**
+  * @function   motor_c_location_exti_config
+  * @brief      configuration the wxit pin as motor a control wire.
+  * @param[in]  None
+  * @retval     None.
+  */
+static void motor_c_location_exti_config(void)
+{
+	EXTI_InitTypeDef EXTI_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	/* RCC Enable */
+	RCC_AHB1PeriphClockCmd(MOTORC_INT_GPIO_CLK, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+	
+	/* NVIC Config */
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+	NVIC_InitStructure.NVIC_IRQChannel = MOTORC_INT_EXTI_IRQ;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 10;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+	/* GPIO Config */
+	Config_GPIO_IN(MOTORC_INT_GPIO_PORT, MOTORC_INT_GPIO_PIN);
+	SYSCFG_EXTILineConfig(MOTORC_INT_EXTI_PORTSOURCE, MOTORC_INT_EXTI_PINSOURCE);
+
+	/* EXIT Config */
+	EXTI_InitStructure.EXTI_Line = MOTORC_INT_EXTI_LINE;
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&EXTI_InitStructure);
+}
+
+/**
+  * @function   motor_d_location_exti_config
+  * @brief      configuration the wxit pin as motor a control wire.
+  * @param[in]  None
+  * @retval     None.
+  */
+static void motor_d_location_exti_config(void)
+{
+	EXTI_InitTypeDef EXTI_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	/* RCC Enable */
+	RCC_AHB1PeriphClockCmd(MOTORD_INT_GPIO_CLK, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+	
+	/* NVIC Config */
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+	NVIC_InitStructure.NVIC_IRQChannel = MOTORD_INT_EXTI_IRQ;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 10;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+	/* GPIO Config */
+	Config_GPIO_IN(MOTORD_INT_GPIO_PORT, MOTORD_INT_GPIO_PIN);
+	SYSCFG_EXTILineConfig(MOTORD_INT_EXTI_PORTSOURCE, MOTORD_INT_EXTI_PINSOURCE);
+
+	/* EXIT Config */
+	EXTI_InitStructure.EXTI_Line = MOTORD_INT_EXTI_LINE;
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&EXTI_InitStructure);
+}
+
+/**
+  * @function   system_motor_exti_config
+  * @brief      configuration the all exit pin for motor control wire.
+  * @param[in]  None
+  * @retval     None.
+  */
+void system_motor_exti_config(void)
+{
+	/* config motor a b c d exit interrupt pin */
+	motor_a_location_exti_config();
+	motor_b_location_exti_config();
+	motor_c_location_exti_config();
+	motor_d_location_exti_config();
+}
+
+/**
   * @function   motor_control_start
   * @brief      Configitation the direction and after motor start.
   * @param[in][out]  motor_t: motor need to configuration.
@@ -566,6 +726,9 @@ void system_motor_init(uint16_t motor_pwm_period, uint16_t motor_pwm_pluse)
 {
 	motor_type_m index;
 	motor_operation_t *motor_t = NULL;
+
+	/* configuration motor exit control pin */
+	system_motor_exti_config();
 
 	for (index = POINTER_A_MOTOR; index < POINTER_MAX_MOTOR; index++)
 	{
