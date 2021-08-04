@@ -379,56 +379,43 @@ void EXTI0_IRQHandler(void)
 }
 
 /**
-  * @function	EXTI1_IRQHandler
-  * @brief		This function handles EXTI1_IRQHandler interrupt request.
+  * @function	EXTI9_5_IRQHandler
+  * @brief		This function handles EXTI4_IRQHandler interrupt request.
   * @param[in]	None.
   * @retval 	None.
   */
-void EXTI1_IRQHandler(void)
+void EXTI9_5_IRQHandler(void)
 {
 	/* check the interrupt */
-	if(EXTI_GetITStatus(EXTI_Line1) != RESET) 
+	if(EXTI_GetITStatus(EXTI_Line5) != RESET) 
 	{
-		PDEBUG("System Key EXTI0_IRQHandler runing...\n");
+		PDEBUG("System Key EXTI5_IRQHandler runing...\n");
 		/* Clear the TI */
-		EXTI_ClearITPendingBit(EXTI_Line1); 
+		EXTI_ClearITPendingBit(EXTI_Line5); 
+	}
+
+	if(EXTI_GetITStatus(EXTI_Line6) != RESET) 
+	{
+		PDEBUG("System Key EXTI6_IRQHandler runing...\n");
+		/* Clear the TI */
+		EXTI_ClearITPendingBit(EXTI_Line6); 
+	}
+
+	if(EXTI_GetITStatus(EXTI_Line7) != RESET) 
+	{
+		PDEBUG("System Key EXTI7_IRQHandler runing...\n");
+		/* Clear the TI */
+		EXTI_ClearITPendingBit(EXTI_Line7); 
+	}
+
+	if(EXTI_GetITStatus(EXTI_Line8) != RESET) 
+	{
+		PDEBUG("System Key EXTI8_IRQHandler runing...\n");
+		/* Clear the TI */
+		EXTI_ClearITPendingBit(EXTI_Line8); 
 	}
 }
 
-
-/**
-  * @function	EXTI2_IRQHandler
-  * @brief		This function handles EXTI2_IRQHandler interrupt request.
-  * @param[in]	None.
-  * @retval 	None.
-  */
-void EXTI2_IRQHandler(void)
-{
-	/* check the interrupt */
-	if(EXTI_GetITStatus(EXTI_Line2) != RESET) 
-	{
-		PDEBUG("System Key EXTI2_IRQHandler runing...\n");
-		/* Clear the TI */
-		EXTI_ClearITPendingBit(EXTI_Line2); 
-	}
-}
-
-/**
-  * @function	EXTI3_IRQHandler
-  * @brief		This function handles EXTI3_IRQHandler interrupt request.
-  * @param[in]	None.
-  * @retval 	None.
-  */
-void EXTI3_IRQHandler(void)
-{
-	/* check the interrupt */
-	if(EXTI_GetITStatus(EXTI_Line3) != RESET) 
-	{
-		PDEBUG("System Key EXTI3_IRQHandler runing...\n");
-		/* Clear the TI */
-		EXTI_ClearITPendingBit(EXTI_Line3); 
-	}
-}
 
 /**
   * @function	PVD_IRQHandler

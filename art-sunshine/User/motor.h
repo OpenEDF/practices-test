@@ -136,35 +136,35 @@ extern motor_operation_t motor_opr[POINTER_MAX_MOTOR];
 /* motor exit interrupt control pin */
 #define MOTORA_INT_GPIO_PORT                GPIOG			/* motor a */
 #define MOTORA_INT_GPIO_CLK                 RCC_AHB1Periph_GPIOG
-#define MOTORA_INT_GPIO_PIN                 GPIO_Pin_0
+#define MOTORA_INT_GPIO_PIN                 GPIO_Pin_5
 #define MOTORA_INT_EXTI_PORTSOURCE          EXTI_PortSourceGPIOG
-#define MOTORA_INT_EXTI_PINSOURCE           EXTI_PinSource0
-#define MOTORA_INT_EXTI_LINE                EXTI_Line0
-#define MOTORA_INT_EXTI_IRQ                 EXTI0_IRQn
+#define MOTORA_INT_EXTI_PINSOURCE           EXTI_PinSource5
+#define MOTORA_INT_EXTI_LINE                EXTI_Line5
+#define MOTORA_INT_EXTI_IRQ                 EXTI9_5_IRQn
 
 #define MOTORB_INT_GPIO_PORT                GPIOG			/* motor b */
 #define MOTORB_INT_GPIO_CLK                 RCC_AHB1Periph_GPIOG
-#define MOTORB_INT_GPIO_PIN                 GPIO_Pin_1
+#define MOTORB_INT_GPIO_PIN                 GPIO_Pin_6
 #define MOTORB_INT_EXTI_PORTSOURCE          EXTI_PortSourceGPIOG
-#define MOTORB_INT_EXTI_PINSOURCE           EXTI_PinSource1
-#define MOTORB_INT_EXTI_LINE                EXTI_Line1
-#define MOTORB_INT_EXTI_IRQ                 EXTI0_IRQn
+#define MOTORB_INT_EXTI_PINSOURCE           EXTI_PinSource6
+#define MOTORB_INT_EXTI_LINE                EXTI_Line6
+#define MOTORB_INT_EXTI_IRQ                 EXTI9_5_IRQn
 
 #define MOTORC_INT_GPIO_PORT                GPIOG			/* motor c */
 #define MOTORC_INT_GPIO_CLK                 RCC_AHB1Periph_GPIOG
-#define MOTORC_INT_GPIO_PIN                 GPIO_Pin_2
+#define MOTORC_INT_GPIO_PIN                 GPIO_Pin_7
 #define MOTORC_INT_EXTI_PORTSOURCE          EXTI_PortSourceGPIOG
-#define MOTORC_INT_EXTI_PINSOURCE           EXTI_PinSource2
-#define MOTORC_INT_EXTI_LINE                EXTI_Line2
-#define MOTORC_INT_EXTI_IRQ                 EXTI0_IRQn
+#define MOTORC_INT_EXTI_PINSOURCE           EXTI_PinSource7
+#define MOTORC_INT_EXTI_LINE                EXTI_Line7
+#define MOTORC_INT_EXTI_IRQ                 EXTI9_5_IRQn
 
 #define MOTORD_INT_GPIO_PORT                GPIOG			/* motor d */
 #define MOTORD_INT_GPIO_CLK                 RCC_AHB1Periph_GPIOG
-#define MOTORD_INT_GPIO_PIN                 GPIO_Pin_3
+#define MOTORD_INT_GPIO_PIN                 GPIO_Pin_8
 #define MOTORD_INT_EXTI_PORTSOURCE          EXTI_PortSourceGPIOG
-#define MOTORD_INT_EXTI_PINSOURCE           EXTI_PinSource3
-#define MOTORD_INT_EXTI_LINE                EXTI_Line3
-#define MOTORD_INT_EXTI_IRQ                 EXTI0_IRQn
+#define MOTORD_INT_EXTI_PINSOURCE           EXTI_PinSource8
+#define MOTORD_INT_EXTI_LINE                EXTI_Line8
+#define MOTORD_INT_EXTI_IRQ                 EXTI9_5_IRQn
 
 /* Exported functions --------------------------------------------------------*/
 void system_motor_init(uint16_t motor_pwm_period, uint16_t motor_pwm_pluse);

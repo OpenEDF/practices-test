@@ -470,19 +470,10 @@ static void motor_init(motor_operation_t *motor_t, motor_type_m motor_local, uin
 static void motor_a_location_exti_config(void)
 {
 	EXTI_InitTypeDef EXTI_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
 
 	/* RCC Enable */
 	RCC_AHB1PeriphClockCmd(MOTORA_INT_GPIO_CLK, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
-	
-	/* NVIC Config */
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
-	NVIC_InitStructure.NVIC_IRQChannel = MOTORA_INT_EXTI_IRQ;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 10;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
 
 	/* GPIO Config */
 	Config_GPIO_IN(MOTORA_INT_GPIO_PORT, MOTORA_INT_GPIO_PIN);
@@ -505,19 +496,10 @@ static void motor_a_location_exti_config(void)
 static void motor_b_location_exti_config(void)
 {
 	EXTI_InitTypeDef EXTI_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
 
 	/* RCC Enable */
 	RCC_AHB1PeriphClockCmd(MOTORB_INT_GPIO_CLK, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
-	
-	/* NVIC Config */
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
-	NVIC_InitStructure.NVIC_IRQChannel = MOTORB_INT_EXTI_IRQ;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 10;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
 
 	/* GPIO Config */
 	Config_GPIO_IN(MOTORB_INT_GPIO_PORT, MOTORB_INT_GPIO_PIN);
@@ -540,19 +522,10 @@ static void motor_b_location_exti_config(void)
 static void motor_c_location_exti_config(void)
 {
 	EXTI_InitTypeDef EXTI_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
 
 	/* RCC Enable */
 	RCC_AHB1PeriphClockCmd(MOTORC_INT_GPIO_CLK, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
-	
-	/* NVIC Config */
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
-	NVIC_InitStructure.NVIC_IRQChannel = MOTORC_INT_EXTI_IRQ;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 10;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
 
 	/* GPIO Config */
 	Config_GPIO_IN(MOTORC_INT_GPIO_PORT, MOTORC_INT_GPIO_PIN);
@@ -575,19 +548,10 @@ static void motor_c_location_exti_config(void)
 static void motor_d_location_exti_config(void)
 {
 	EXTI_InitTypeDef EXTI_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
 
 	/* RCC Enable */
 	RCC_AHB1PeriphClockCmd(MOTORD_INT_GPIO_CLK, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
-	
-	/* NVIC Config */
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
-	NVIC_InitStructure.NVIC_IRQChannel = MOTORD_INT_EXTI_IRQ;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 10;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
 
 	/* GPIO Config */
 	Config_GPIO_IN(MOTORD_INT_GPIO_PORT, MOTORD_INT_GPIO_PIN);
@@ -609,6 +573,16 @@ static void motor_d_location_exti_config(void)
   */
 void system_motor_exti_config(void)
 {
+	/* Config and enable EXTI9_5_IRQn */
+	NVIC_InitTypeDef NVIC_InitStructure;
+	/* NVIC Config */
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+	NVIC_InitStructure.NVIC_IRQChannel = EXTI9_5_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 10;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
 	/* config motor a b c d exit interrupt pin */
 	motor_a_location_exti_config();
 	motor_b_location_exti_config();
