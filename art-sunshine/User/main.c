@@ -44,24 +44,24 @@
 
 /* Task heap stack size */
 #define SUNSHINESTART_TASK_RAM		        128
-#define SUNSHINECONTROL_TASK_RAM		      256
-#define USARTSEND_TASK_RAM		    				256
-#define SUNREADWINDSPPED_TASK_RAM					512
-#define LTERECEIVER_TASK_RAM							512
-#define USERAPPLICATION_TASK_RAM					512
+#define SUNSHINECONTROL_TASK_RAM		    256
+#define USARTSEND_TASK_RAM		    		256
+#define SUNREADWINDSPPED_TASK_RAM			512
+#define LTERECEIVER_TASK_RAM				512
+#define USERAPPLICATION_TASK_RAM			512
 
 
 /* Task Priority */
 #define SUNSHINESTART_TASK_PRIORITY		    1
-#define SUNSHINECONTROL_TASK_PRIORITY			6
-#define USARTSEND_TASK_PRIORITY		    		5
+#define SUNSHINECONTROL_TASK_PRIORITY		6
+#define USARTSEND_TASK_PRIORITY		    	2
 #define SUNREADWINDSPPED_TASK_PRIORITY		4
-#define LTERECEIVER_TASK_PRIORITY					2
+#define LTERECEIVER_TASK_PRIORITY			5
 #define USERAPPLICATION_TASK_PRIORITY	    3
 
 
 /* Queue items numbers */
-#define USART_QUEUE_SIZE									3
+#define USART_QUEUE_SIZE					3
 
 /* Private variables ---------------------------------------------------------*/
 TaskHandle_t vStartTaskHandler, vControlTaskHandler, vUSARTSendTaskHandler, 
@@ -89,7 +89,7 @@ int main(void)
 
 	/* Config and Enable the Watchdog */
 	IWDG_Config(IWDG_TIMEOUT_1S);
-		
+
 	/* create the system start task */
 	xTaskCreate(SunshineStart_Task, "SunshineStart_Task", SUNSHINESTART_TASK_RAM, NULL, SUNSHINESTART_TASK_PRIORITY, &vStartTaskHandler);
 	
@@ -133,7 +133,7 @@ void SunshineStart_Task(void *pvParameters)
 
 	/* Deleted the SunshineStart_Task Task */
 	vTaskDelete(vStartTaskHandler);
-	PDEBUG("SunshineStart_Task is Delete.\n");
+	PDEBUG("\rSunshineStart_Task is Delete.\n");
 	
 	taskEXIT_CRITICAL();    /* Exit the critical zone */
 }

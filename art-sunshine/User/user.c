@@ -65,62 +65,67 @@ void System_Init(void)
 
 	/* Check the system clock */
 	RCC_GetClocksFreq(&get_system_clock);
-
- 	/* system LED Initalizes */
-	System_LED_Init();
 	
 	/* system UART Initalizes */
 	System_USART_Init();
-	PDEBUG("System UART Initalized.\n");
-	PDEBUG("The system clock: %d Hz.\n", get_system_clock.SYSCLK_Frequency);
+	PDEBUG("\rSystem UART Initalized.\n");
+	PDEBUG("\rThe system clock: %d Hz.\n", get_system_clock.SYSCLK_Frequency);
+	
+	/* system LED Initalizes */
+	System_LED_Init();
+	PDEBUG("\rSystem LED Initalized.\n");
  
 	/* Basic Timer config */
 	TIM6_Configuration();
 	TIM2_Configuration();
-	PDEBUG("System TIMER6 Initalized.\n");
+	PDEBUG("\rSystem TIMER6 & TIMER2 Initalized.\n");
 
 	/* system sensor Init  */
 	Sensor_Init();
-	PDEBUG("System Seneor Initalized.\n");
+	PDEBUG("\rSystem Seneor Initalized.\n");
 	
 	/* system RTC Init */
 	System_RTC_Init();
-	PDEBUG("System RTC Initalized.\n");
+	PDEBUG("\rSystem RTC Initalized.\n");
 
 	/* system LED Init */
 	TASK_LED_ON();
-	PDEBUG("System TASK LED Initalized.\n");
+	PDEBUG("\rSystem TASK LED Initalized.\n");
 	
 	/* system BEEP Init */
 	System_Beep_Init();
-	PDEBUG("System BEEP Initalized.\n");
+	PDEBUG("\rSystem BEEP Initalized.\n");
 
 	/* system KEY Init */
 	EXTI_KEY_Config();
-	PDEBUG("System KEY Configured.\n");
+	PDEBUG("\rSystem KEY Configured.\n");
 
 	/* system LTE moudle Init */
 	LTE_DeInit();
-	PDEBUG("System LTE Moudles Initalized.\n");
+	PDEBUG("\rSystem LTE Moudles Initalized.\n");
 
 	/* system PVD Config */
 	PVD_Config(PVD_LEVEL_2_7);
-	PDEBUG("system PVD Configured.\n");
+	PDEBUG("\rsystem PVD Configured.\n");
 	
 	/* system motor pwm Init */
 	system_motor_init(MOTOR_1000HZ_PARAMEMTERS);
-	motor_test();
+	PDEBUG("\rsystem Motor A B C D Configured.\n");
+
+	/* system LCD_Init */
+	LCD_Init();
+	PDEBUG("\rsystem LCD Initalized.\n");
 
 	/* system parameters Initalized */
 	Flash_LoadWorkParam();
 	Flash_ReadByte(FLASH_WORK_PARAM_ADDR, &Flash_ID);
 	//if (Flash_ID != 'W') 
 	//{
-		PDEBUG("Store the System parameters to Flash.\n");
+		PDEBUG("\rStore the System parameters to Flash.\n");
 		Flash_SaveWorkParam();
 	//}
 
-	PDEBUG("System Iniatlized.\n");
+	PDEBUG("\rSystem Iniatlized.\n");
 	/* END */
 }
 
@@ -139,13 +144,13 @@ void Calibration_Time(void)
 	LTE_ATE0();		/* CLOSE THE ECH0 */
 	
 	current_time = LTE_QueryRTC();
-	PDEBUG("The Current Time: %d/%d/%d - %d:%d:%d", current_time.rtc_date.date_year, current_time.rtc_date.date_month, \
+	PDEBUG("\rThe Current Time: %02d/%02d/%02d - %02d:%02d:%02d.\n", current_time.rtc_date.date_year, current_time.rtc_date.date_month, \
 													current_time.rtc_date.date_day, current_time.rtc_time.time_hours,  \
 													current_time.rtc_time.time_minutes, current_time.rtc_time.time_seconds);
 	
 	/* Calculater the time of sunset and sunrise */
 	Art_Sunshine_Info.sunrise_set = ClaculSun_RiseSet(current_time, Art_Sunshine_Info.HangZhou);
-	PDEBUG("Today Sunrise Time: %d:%d, SunSet Time: %d:%d\n", 	\
+	PDEBUG("\rToday Sunrise Time: %02d:%02d, SunSet Time: %02d:%02d.\n", 	\
 		Art_Sunshine_Info.sunrise_set.sunrise_time.time_hours,  \
 		Art_Sunshine_Info.sunrise_set.sunrise_time.time_minutes,\
 		Art_Sunshine_Info.sunrise_set.sunset_time.time_hours,   \
@@ -190,7 +195,7 @@ void Wait_LTEStartUp(uint8_t sec)
 	uint8_t endtime;
 	/* Wait the LTE Moudles Start up */
 	endtime = seconds + sec;
-	PDEBUG("Wait for the LTE moudles to start up... %ds.\n", sec);
+	PDEBUG("\rWait for the LTE moudles to start up... %ds.\n", sec);
 	
   	while (seconds < endtime);
 
@@ -252,6 +257,9 @@ void UserApplication_Task(void *pvParameters)
 
 	/* LTE Moudles connect Network */
 	LTE_ConnetNetwork();
+
+	/* LCD default display */
+	LCD_DefaultShow();
 
 	while(TRUE)
 	{

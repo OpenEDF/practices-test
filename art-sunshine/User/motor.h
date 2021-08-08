@@ -65,7 +65,9 @@ typedef struct {
 	motor_dircetion_m motor_direction;	/* motor direction */
 	uint32_t motor_pluse_count;         /* pluse counter */
 	uint32_t motor_pwm_period;          /* PWM period */
+	uint32_t motor_pwm_total_pluse;		/* the cumulative of the motor operation, indicating the current position */
 	uint16_t motor_pwm_pluse;           /* PWM pluse */
+	uint16_t reserved;
 	void (*motor_gpio_init)(motor_type_m motor);   /* init the gpio pin for the motor */
     void (*motor_timer_init)(motor_type_m motor, uint32_t period, uint16_t pluse_count);    /* init the timer */
 	void (*motor_work_state)(motor_type_m motor, motor_state_m state);                      /* set teh motor state */
@@ -174,9 +176,12 @@ void set_pluse_count(motor_operation_t *motor_t, uint32_t pluse_count);
 uint32_t get_pluse_count(motor_operation_t *motor_t);
 motor_state_m get_motor_state(motor_operation_t *motor_t);
 motor_dircetion_m get_motor_direction(motor_operation_t *motor_t);
+float32_t get_motor_cur_poistion(motor_operation_t *motor_t);
 void motor_work_by_pluse_count(motor_operation_t *motor_t, uint32_t pluse_count, motor_dircetion_m dir);
 void control_motor_run(motor_operation_t *motor_t, float32_t *angle, motor_dircetion_m dir);
 void system_motor_exti_config(void);
+void system_motor_self_checking(void);
+void system_motor_all_stop(void);
 void motor_test(void);
 #ifdef __cplusplus
 }

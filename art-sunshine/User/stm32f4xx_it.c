@@ -65,7 +65,7 @@ void HardFault_Handler(void)
   /* Go to infinite loop when Hard Fault exception occurs */
   while (1)
   {
-		PDEBUG("system Enter the HardFault_Handler, Please Ckeck and restart.\n");
+		PDEBUG("\rsystem Enter the HardFault_Handler, Please Ckeck and restart.\n");
   }
 }
 
@@ -386,31 +386,57 @@ void EXTI0_IRQHandler(void)
   */
 void EXTI9_5_IRQHandler(void)
 {
+	motor_operation_t *motor = NULL;
 	/* check the interrupt */
+
+	motor = &motor_opr[POINTER_A_MOTOR];
 	if(EXTI_GetITStatus(EXTI_Line5) != RESET) 
 	{
 		PDEBUG("System Key EXTI5_IRQHandler runing...\n");
+		/* stop and clear */
+		motor->motor_pluse_count = 0;
+		motor_control_stop(motor);
+		motor->motor_pwm_total_pluse = 0;
+		
 		/* Clear the TI */
 		EXTI_ClearITPendingBit(EXTI_Line5); 
 	}
 
+	motor = &motor_opr[POINTER_B_MOTOR];
 	if(EXTI_GetITStatus(EXTI_Line6) != RESET) 
 	{
 		PDEBUG("System Key EXTI6_IRQHandler runing...\n");
+		
+		motor->motor_pluse_count = 0;
+		motor_control_stop(motor);
+		motor->motor_pwm_total_pluse = 0;
+		
 		/* Clear the TI */
 		EXTI_ClearITPendingBit(EXTI_Line6); 
 	}
 
+	motor = &motor_opr[POINTER_C_MOTOR];
 	if(EXTI_GetITStatus(EXTI_Line7) != RESET) 
 	{
 		PDEBUG("System Key EXTI7_IRQHandler runing...\n");
+		
+		motor->motor_pluse_count = 0;
+		motor_control_stop(motor);
+		motor->motor_pwm_total_pluse = 0;
+		
 		/* Clear the TI */
 		EXTI_ClearITPendingBit(EXTI_Line7); 
 	}
 
+	motor = &motor_opr[POINTER_D_MOTOR];
 	if(EXTI_GetITStatus(EXTI_Line8) != RESET) 
 	{
 		PDEBUG("System Key EXTI8_IRQHandler runing...\n");
+
+		motor->motor_pluse_count = 0;
+		motor_control_stop(motor);
+		motor->motor_pwm_total_pluse = 0;
+		
 		/* Clear the TI */
 		EXTI_ClearITPendingBit(EXTI_Line8); 
 	}

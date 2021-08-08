@@ -52,6 +52,8 @@ extern SemaphoreHandle_t xLCDBinarySemaphore;
 /* Exported functions --------------------------------------------------------*/
 FunStatus Send_DataTo_LCD(char *data);
 void LCD_Init(void);
+void lcd_uart_tx_str(char *str);
+
 
 #ifdef __cplusplus
 }

@@ -65,7 +65,7 @@ void SunshineControl_Task(void *pvParameters)
 	
 	while(TRUE)
 	{
-		PDEBUG("SunshineControl_Task is Runing.\n");
+		PDEBUG("\rSunshineControl_Task is Runing.\n");
 		/* get the current time */
 
 		curtime = RTC_TimeAndDate_Get();
@@ -499,14 +499,14 @@ void Normal_Mode_Operation(uint32_t second_value, RTC_Type date_time)
 		altazi_value = ClaculSun_AltAzi(date_time, Art_Sunshine_Info.HangZhou);
 
 		/* ptintf the importmant parameters */
-		PDEBUG("Date: %d/%d/%d - Time: %d:%d:%d\n", date_time.rtc_date.date_year, date_time.rtc_date.date_month, date_time.rtc_date.date_day, \
+		PDEBUG("\rDate: %d/%02d/%02d - Time: %02d:%02d:%02d\n", date_time.rtc_date.date_year, date_time.rtc_date.date_month, date_time.rtc_date.date_day, \
 												   date_time.rtc_time.time_hours, date_time.rtc_time.time_minutes, date_time.rtc_time.time_seconds);
-		PDEBUG("The altazi_value is: altangle: %f\t altangle: %f\t\n", altazi_value.altangles, altazi_value.azimuths);
+		PDEBUG("\rThe altazi_value is: altangle: %f\t azimuths: %f\t\n", altazi_value.altangles, altazi_value.azimuths);
 	}
 	else
 	{
-		PDEBUG("The sunrise time: %d : %d\n", Art_Sunshine_Info.sunrise_set.sunrise_time.time_hours,  Art_Sunshine_Info.sunrise_set.sunrise_time.time_minutes);
-		PDEBUG("Good night!\n");
+		PDEBUG("\rThe sunrise time: %d : %d\n", Art_Sunshine_Info.sunrise_set.sunrise_time.time_hours,  Art_Sunshine_Info.sunrise_set.sunrise_time.time_minutes);
+		PDEBUG("\rGood night!\n");
 	}
 }
 
