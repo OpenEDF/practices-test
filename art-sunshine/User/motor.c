@@ -441,6 +441,7 @@ static void motor_roration_direction(motor_type_m motor, motor_dircetion_m direc
 static void motor_init(motor_operation_t *motor_t, motor_type_m motor_local, uint16_t motor_pwm_period, uint16_t motor_pwm_pluse)
 {
     /* Initalization base data */
+	motor_t->motor_work = MOTOR_WORK_ERROR;
 	motor_t->motor_local = motor_local;
     motor_t->motor_state = MOTOR_STATE_STOP;
     motor_t->motor_direction = MOTOR_DIR_POSITIVER;
@@ -750,7 +751,7 @@ void control_motor_run(motor_operation_t *motor_t, float32_t *angle, motor_dirce
 
 /**
   * @function  system_motor_self_checking
-  * @brief     set the motor selt checking and find the zero position.
+  * @brief     set the system all motor selt checking and find the zero position.
   * @param[in] None.
   * @retval    None.
   */
@@ -769,6 +770,19 @@ void system_motor_self_checking(void)
 }
 
 /**
+  * @function  motor_self_checking
+  * @brief     set the signal motor selt checking and find the zero position.
+  * @param[in] motor_operation_t: The motor will be run self checking.
+  * @retval    None.
+  */
+void motor_self_checking(motor_operation_t *motor_t)
+{
+	float32_t angle = 180.00f;
+	control_motor_run(motor_t, &angle, MOTOR_DIR_POSITIVER);	
+}
+
+
+/**
   * @function  system_motor_all_stop
   * @brief     set the motor stop all of sysytem.
   * @param[in] None.
@@ -785,6 +799,45 @@ void system_motor_all_stop(void)
 		motor_t = &motor_opr[index];
 		motor_control_stop(motor_t);	
 	}
+}
+
+/**
+  * @function  get_motor_check_state
+  * @brief     get the system motor status.
+  * @param[in] None.
+  * @retval    motor_work_m: motor work state.
+  */
+motor_work_m get_motor_check_state(motor_operation_t *motor_t)
+{
+	return (motor_t->motor_work);
+}
+
+
+/**
+  * @function  get_system_motor_check_state
+  * @brief     get the system all motor status.
+  * @param[in] None.
+  * @retval    motor_work_m: all of motor work state.
+  */
+uint8_t get_system_motor_check_state(void)
+{
+	uint8_t state = 0x00;
+	motor_operation_t *motor_t = NULL;
+	
+	/* get the motor state */
+	motor_t =  &motor_opr[POINTER_D_MOTOR];
+	state = state | (get_motor_check_state(motor_t) << 3);
+
+	motor_t =  &motor_opr[POINTER_C_MOTOR];
+	state = state | (get_motor_check_state(motor_t) << 2);
+
+	motor_t =  &motor_opr[POINTER_B_MOTOR];
+	state = state | (get_motor_check_state(motor_t) << 1);
+
+	motor_t =  &motor_opr[POINTER_A_MOTOR];
+	state = state | get_motor_check_state(motor_t);
+	
+	return state;
 }
 
 

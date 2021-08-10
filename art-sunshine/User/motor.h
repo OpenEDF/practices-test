@@ -58,8 +58,16 @@ typedef enum {
 	MOTOR_STATE_STOP,					/* motor Stop */
 }motor_state_m;
 
+/* motor work state */
+typedef enum {
+	MOTOR_WORK_OK = 0x01,				/* motor start */
+	MOTOR_WORK_ERROR = !MOTOR_WORK_OK,	/* motor Stop */
+}motor_work_m;
+
+
 /* motor control structer */
 typedef struct {
+	motor_work_m motor_work;			/* motor work status */
 	motor_type_m motor_local;			/* motor localtion */
 	motor_state_m motor_state;			/* motor operaton status */
 	motor_dircetion_m motor_direction;	/* motor direction */
@@ -181,6 +189,9 @@ void motor_work_by_pluse_count(motor_operation_t *motor_t, uint32_t pluse_count,
 void control_motor_run(motor_operation_t *motor_t, float32_t *angle, motor_dircetion_m dir);
 void system_motor_exti_config(void);
 void system_motor_self_checking(void);
+void motor_self_checking(motor_operation_t *motor_t);
+motor_work_m get_motor_check_state(motor_operation_t *motor_t);
+uint8_t get_system_motor_check_state(void);
 void system_motor_all_stop(void);
 void motor_test(void);
 #ifdef __cplusplus

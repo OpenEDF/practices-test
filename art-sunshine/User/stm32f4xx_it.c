@@ -39,6 +39,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -65,7 +66,7 @@ void HardFault_Handler(void)
   /* Go to infinite loop when Hard Fault exception occurs */
   while (1)
   {
-		PDEBUG("\rsystem Enter the HardFault_Handler, Please Ckeck and restart.\n");
+ 		PDEBUG("\rsystem Enter the HardFault_Handler, Please Ckeck and restart.\n");
   }
 }
 
@@ -334,7 +335,7 @@ void RTC_Alarm_IRQHandler(void)
 	if (RTC_GetITStatus(RTC_IT_ALRA) != RESET)
 	{
 		RTC_ClearITPendingBit(RTC_IT_ALRA);
-		PDEBUG("Alarm Interrupt Runing.\n");
+		PDEBUG("\rAlarm Interrupt Runing.\n");
 		/* upgrade the alalrm flag */
 		Alarm_Flag = 0xFF;															
 	}
@@ -372,7 +373,7 @@ void EXTI0_IRQHandler(void)
 	/* check the interrupt */
 	if(EXTI_GetITStatus(EXTI_Line0) != RESET) 
 	{
-		PDEBUG("System Key EXTI0_IRQHandler runing...\n");
+		PDEBUG("\rSystem Key EXTI0_IRQHandler runing...\n");
 		/* Clear the TI */
 		EXTI_ClearITPendingBit(EXTI_Line0); 
 	}
@@ -392,12 +393,14 @@ void EXTI9_5_IRQHandler(void)
 	motor = &motor_opr[POINTER_A_MOTOR];
 	if(EXTI_GetITStatus(EXTI_Line5) != RESET) 
 	{
-		PDEBUG("System Key EXTI5_IRQHandler runing...\n");
+		PDEBUG("\rSystem Motor A EXTI5_IRQHandler runing...\n");
 		/* stop and clear */
 		motor->motor_pluse_count = 0;
 		motor_control_stop(motor);
 		motor->motor_pwm_total_pluse = 0;
-		
+
+		/* update the motor state */
+		motor->motor_work = MOTOR_WORK_OK;
 		/* Clear the TI */
 		EXTI_ClearITPendingBit(EXTI_Line5); 
 	}
@@ -405,12 +408,14 @@ void EXTI9_5_IRQHandler(void)
 	motor = &motor_opr[POINTER_B_MOTOR];
 	if(EXTI_GetITStatus(EXTI_Line6) != RESET) 
 	{
-		PDEBUG("System Key EXTI6_IRQHandler runing...\n");
+		PDEBUG("\rSystem Motor B EXTI6_IRQHandler runing...\n");
 		
 		motor->motor_pluse_count = 0;
 		motor_control_stop(motor);
 		motor->motor_pwm_total_pluse = 0;
-		
+
+		/* update the motor state */
+		motor->motor_work = MOTOR_WORK_OK;
 		/* Clear the TI */
 		EXTI_ClearITPendingBit(EXTI_Line6); 
 	}
@@ -418,12 +423,14 @@ void EXTI9_5_IRQHandler(void)
 	motor = &motor_opr[POINTER_C_MOTOR];
 	if(EXTI_GetITStatus(EXTI_Line7) != RESET) 
 	{
-		PDEBUG("System Key EXTI7_IRQHandler runing...\n");
+		PDEBUG("\rSystem Motor C EXTI7_IRQHandler runing...\n");
 		
 		motor->motor_pluse_count = 0;
 		motor_control_stop(motor);
 		motor->motor_pwm_total_pluse = 0;
-		
+
+		/* update the motor state */
+		motor->motor_work = MOTOR_WORK_OK;
 		/* Clear the TI */
 		EXTI_ClearITPendingBit(EXTI_Line7); 
 	}
@@ -431,12 +438,14 @@ void EXTI9_5_IRQHandler(void)
 	motor = &motor_opr[POINTER_D_MOTOR];
 	if(EXTI_GetITStatus(EXTI_Line8) != RESET) 
 	{
-		PDEBUG("System Key EXTI8_IRQHandler runing...\n");
+		PDEBUG("\rSystem Motor D EXTI8_IRQHandler runing...\n");
 
 		motor->motor_pluse_count = 0;
 		motor_control_stop(motor);
 		motor->motor_pwm_total_pluse = 0;
-		
+
+		/* update the motor state */
+		motor->motor_work = MOTOR_WORK_OK;
 		/* Clear the TI */
 		EXTI_ClearITPendingBit(EXTI_Line8); 
 	}
@@ -454,11 +463,11 @@ void PVD_IRQHandler(void)
 	/* check the PVDO */
 	if (PWR_GetFlagStatus(PWR_FLAG_PVDO) != RESET)
 	{
-		PDEBUG("System Enter the PVD interrupt Handler.\n");
-		PDEBUG("System will save parameters to flash and shutdown.\n");
+		PDEBUG("\rSystem Enter the PVD interrupt Handler.\n");
+		PDEBUG("\rSystem will save parameters to flash and shutdown.\n");
 		/* save the parameters */
 		Flash_LoadWorkParam();
-		PDEBUG("goodbye dear friend.\n");
+		PDEBUG("\rgoodbye dear friend.\n");
 	}
 }
 

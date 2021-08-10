@@ -576,7 +576,7 @@ void USARTSend_Task(void *pvParameters)
 					break;
 
 					default:
-						/* ... */
+						/* ... never */
 					break;
 				}
 			}

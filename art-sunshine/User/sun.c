@@ -40,7 +40,7 @@
 /* Private define ------------------------------------------------------------*/
 
 /* Private macro -------------------------------------------------------------*/
-
+#define MOTOR_ALL_WORK_OK 0x0F	/* 0000DCBA */
 /* Private variables ---------------------------------------------------------*/
 
 /* Private function prototypes -----------------------------------------------*/
@@ -61,38 +61,58 @@ void SunshineControl_Task(void *pvParameters)
 {
 	RTC_Type curtime;
 	uint32_t curtime_second;
-	vTaskDelay(pdMS_TO_TICKS(5000));
+	uint8_t motor_state = 0x00; 
+	uint8_t temp;
+	motor_operation_t *motor_t;
+	vTaskDelay(pdMS_TO_TICKS(5000));	/* wait the motor selt chech finish */
 	
 	while(TRUE)
 	{
 		PDEBUG("\rSunshineControl_Task is Runing.\n");
 		/* get the current time */
 
-		curtime = RTC_TimeAndDate_Get();
-		curtime_second = Conv_TimeToSecond(&curtime.rtc_time);
-		/* choose the system mode and control */
-		switch (Art_Sunshine_Info.mode)
+		/* get the system motor status */
+		motor_state = get_system_motor_check_state();
+		if (motor_state == MOTOR_ALL_WORK_OK)
 		{
-			case NORMAL_MODE:
-				/* Normal mode operation function */
-				Normal_Mode_Operation(curtime_second, curtime);
-				
-			break;
+			curtime = RTC_TimeAndDate_Get();
+			curtime_second = Conv_TimeToSecond(&curtime.rtc_time);
+			/* choose the system mode and control */
+			switch (Art_Sunshine_Info.mode)
+			{
+				case NORMAL_MODE:
+					/* Normal mode operation function */
+					Normal_Mode_Operation(curtime_second, curtime);
+					
+				break;
 
-			case EXCEPTION_MODE:
-				/* exception mode operation function */
-				Exception_Mode_Operation(curtime_second, curtime);
+				case EXCEPTION_MODE:
+					/* exception mode operation function */
+					Exception_Mode_Operation(curtime_second, curtime);
 			
-			break;
+				break;
 
-			case CLEAR_MODE:
-				/* clear and default mode operation function */
-				Clear_Mode_Operation(curtime_second, curtime);
+				case CLEAR_MODE:
+					/* clear and default mode operation function */
+					Clear_Mode_Operation(curtime_second, curtime);
 				
-			break;
+				break;
 
-			default:
-			break;
+				default:
+				break;
+			}
+		}
+		else /* set the motor seft checking */
+		{
+			for (uint8_t index = 0; index < POINTER_MAX_MOTOR; index++)
+			{
+				motor_t = &motor_opr[index];
+				if (motor_state >> == 0x00)
+				{
+					motor_self_checking(motor_t);
+				}
+					
+			}
 		}
 		vTaskDelay(pdMS_TO_TICKS(Art_Sunshine_Info.control_interval));
 	}

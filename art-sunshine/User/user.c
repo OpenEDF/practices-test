@@ -93,7 +93,7 @@ void System_Init(void)
 	PDEBUG("\rSystem TASK LED Initalized.\n");
 	
 	/* system BEEP Init */
-	System_Beep_Init();
+//	System_Beep_Init();
 	PDEBUG("\rSystem BEEP Initalized.\n");
 
 	/* system KEY Init */
@@ -288,6 +288,8 @@ void UserApplication_Task(void *pvParameters)
 				break;
 
 				case CLEAR_MODE:
+
+				break;
 				default:
 				break;
 			}

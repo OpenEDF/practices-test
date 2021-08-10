@@ -63,7 +63,7 @@ static FunStatus Check_Result(void);
   */  
 FunStatus Send_DataTo_LCD(char *data)
 {
-	char *txbuffer;
+	PORT_BUF_FORMAT *txbuffer;
 	uint8_t templen;
 	/* allocated the memory */
 	if (NULL == (txbuffer = pvPortMalloc(LCD_MAXDATA_SZIE)))
@@ -71,18 +71,24 @@ FunStatus Send_DataTo_LCD(char *data)
 		PDEBUG("\rNo more memory to be allocate.\n");
 		return R_ERROR;
 	}
-
+	
+	txbuffer->port = USART_LCD;	/* port and length */
 	templen = strlen(data);
+	txbuffer->length = templen;
+
 	/* check parameters */
-	if ((templen > 100) || (data == NULL))
+	if ((templen > 60) || (templen == 0))
 	{
 		vPortFree(txbuffer);
 		return R_ERROR;
 	}
 		
 	/* Frames the data */
-	memcpy(txbuffer, data, templen);
-	strcat(txbuffer, "\r\n");
+	memcpy(txbuffer->buffer, data, templen);
+	txbuffer->buffer[templen] = '\r';
+	txbuffer->buffer[templen + 1] = '\n';	/* must add the \r\n */
+	txbuffer->buffer[templen + 2] = '\0';
+	txbuffer->length = templen + 2;
 	
 	/* Send to queue */
 	if(xQueueSendToBack(xSerialTxQueue, &txbuffer, pdMS_TO_TICKS(100)) != pdPASS)
@@ -170,7 +176,7 @@ static FunStatus Check_Result(void)
 	}
 	
 	/* give the Binary semaphore and clean the buffer*/
-	//xSemaphoreGive(xLCDBinarySemaphore);
+	xSemaphoreGive(xLCDBinarySemaphore);
 	memset(uartPtr->rxbuffer, 0x00, uartPtr->rxbuf_count);
 	uartPtr->rxbuf_count = 0;
 
