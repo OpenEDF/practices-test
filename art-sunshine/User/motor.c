@@ -441,12 +441,14 @@ static void motor_roration_direction(motor_type_m motor, motor_dircetion_m direc
 static void motor_init(motor_operation_t *motor_t, motor_type_m motor_local, uint16_t motor_pwm_period, uint16_t motor_pwm_pluse)
 {
     /* Initalization base data */
+	motor_t->motor_work = MOTOR_WORK_ERROR;
 	motor_t->motor_local = motor_local;
     motor_t->motor_state = MOTOR_STATE_STOP;
     motor_t->motor_direction = MOTOR_DIR_POSITIVER;
     motor_t->motor_pluse_count = 0x00;
     motor_t->motor_pwm_pluse = motor_pwm_pluse;
     motor_t->motor_pwm_period = motor_pwm_period;
+	motor_t->motor_pwm_total_pluse = 0x00;
     
     /* Initzlization the special data */
     motor_t->motor_gpio_init = motor_gpio_init;
@@ -674,6 +676,19 @@ motor_dircetion_m get_motor_direction(motor_operation_t *motor_t)
 }
 
 /**
+  * @function  get_motor_cur_poistion
+  * @brief     get the current poistion for motor.
+  * @param[in][out] motor_t: motor need to configuration.
+  * @retval    the angle of motor current poistion.
+  */
+float32_t get_motor_cur_poistion(motor_operation_t *motor_t)
+{
+	/* get the angle */
+	return (motor_t->motor_pwm_total_pluse / PER_DEGREE_PLUSES_NUMBER);
+}
+
+
+/**
   * @function  motor_work_by_pluse_count
   * @brief     accroding the pluse counter driver the motor work.
   * @param[in][out] motor_t: motor need to configuration.
@@ -728,8 +743,103 @@ void control_motor_run(motor_operation_t *motor_t, float32_t *angle, motor_dirce
 	/* calculater the pluse counter */
 	arm_mult_f32(angle, &additi, &pluse_count, 1);
 	temp_count = (uint32_t)pluse_count;
+
+	/* add the pluse value */
+	motor_t->motor_pwm_total_pluse += temp_count;
 	motor_work_by_pluse_count(motor_t, temp_count, dir);	
 }
+
+/**
+  * @function  system_motor_self_checking
+  * @brief     set the system all motor selt checking and find the zero position.
+  * @param[in] None.
+  * @retval    None.
+  */
+void system_motor_self_checking(void)
+{
+	motor_operation_t *motor_t = NULL;
+	motor_type_m index;
+	float32_t angle = 180.00f;
+
+	/* calculater the pluse counter */
+	for (index = POINTER_A_MOTOR; index < POINTER_MAX_MOTOR; index++)
+	{
+		motor_t = &motor_opr[index];
+		control_motor_run(motor_t, &angle, MOTOR_DIR_POSITIVER);	
+	}
+}
+
+/**
+  * @function  motor_self_checking
+  * @brief     set the signal motor selt checking and find the zero position.
+  * @param[in] motor_operation_t: The motor will be run self checking.
+  * @retval    None.
+  */
+void motor_self_checking(motor_operation_t *motor_t)
+{
+	float32_t angle = 180.00f;
+	control_motor_run(motor_t, &angle, MOTOR_DIR_POSITIVER);	
+}
+
+
+/**
+  * @function  system_motor_all_stop
+  * @brief     set the motor stop all of sysytem.
+  * @param[in] None.
+  * @retval    None.
+  */
+void system_motor_all_stop(void)
+{
+	motor_operation_t *motor_t = NULL;
+	motor_type_m index;
+
+	/* stop and clear */
+	for (index = POINTER_A_MOTOR; index < POINTER_MAX_MOTOR; index++)
+	{
+		motor_t = &motor_opr[index];
+		motor_control_stop(motor_t);	
+	}
+}
+
+/**
+  * @function  get_motor_check_state
+  * @brief     get the system motor status.
+  * @param[in] None.
+  * @retval    motor_work_m: motor work state.
+  */
+motor_work_m get_motor_check_state(motor_operation_t *motor_t)
+{
+	return (motor_t->motor_work);
+}
+
+
+/**
+  * @function  get_system_motor_check_state
+  * @brief     get the system all motor status.
+  * @param[in] None.
+  * @retval    motor_work_m: all of motor work state.
+  */
+uint8_t get_system_motor_check_state(void)
+{
+	uint8_t state = 0x00;
+	motor_operation_t *motor_t = NULL;
+	
+	/* get the motor state */
+	motor_t =  &motor_opr[POINTER_D_MOTOR];
+	state = state | (get_motor_check_state(motor_t) << 3);
+
+	motor_t =  &motor_opr[POINTER_C_MOTOR];
+	state = state | (get_motor_check_state(motor_t) << 2);
+
+	motor_t =  &motor_opr[POINTER_B_MOTOR];
+	state = state | (get_motor_check_state(motor_t) << 1);
+
+	motor_t =  &motor_opr[POINTER_A_MOTOR];
+	state = state | get_motor_check_state(motor_t);
+	
+	return state;
+}
+
 
 /**
   * @function  motor_test

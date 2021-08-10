@@ -33,6 +33,7 @@
 #include "user.h"
 #include "sensor.h"
 #include "iwdg.h"
+#include "motor.h"
 
 /** @addtogroup ART-SUNSHINE_Project
   * @{
@@ -44,24 +45,24 @@
 
 /* Task heap stack size */
 #define SUNSHINESTART_TASK_RAM		        128
-#define SUNSHINECONTROL_TASK_RAM		      256
-#define USARTSEND_TASK_RAM		    				256
-#define SUNREADWINDSPPED_TASK_RAM					512
-#define LTERECEIVER_TASK_RAM							512
-#define USERAPPLICATION_TASK_RAM					512
+#define SUNSHINECONTROL_TASK_RAM		    256
+#define USARTSEND_TASK_RAM		    		256
+#define SUNREADWINDSPPED_TASK_RAM			512
+#define LTERECEIVER_TASK_RAM				512
+#define USERAPPLICATION_TASK_RAM			512
 
 
 /* Task Priority */
 #define SUNSHINESTART_TASK_PRIORITY		    1
-#define SUNSHINECONTROL_TASK_PRIORITY			6
-#define USARTSEND_TASK_PRIORITY		    		5
+#define SUNSHINECONTROL_TASK_PRIORITY		6
+#define USARTSEND_TASK_PRIORITY		    	2
 #define SUNREADWINDSPPED_TASK_PRIORITY		4
-#define LTERECEIVER_TASK_PRIORITY					2
+#define LTERECEIVER_TASK_PRIORITY			5
 #define USERAPPLICATION_TASK_PRIORITY	    3
 
 
 /* Queue items numbers */
-#define USART_QUEUE_SIZE									3
+#define USART_QUEUE_SIZE					3
 
 /* Private variables ---------------------------------------------------------*/
 TaskHandle_t vStartTaskHandler, vControlTaskHandler, vUSARTSendTaskHandler, 
@@ -85,11 +86,15 @@ int main(void)
 {
 	/* system init */
 	System_Init();
-	//Wait_LTEStartUp(LTE_WAIT_SECOND);
+	Wait_LTEStartUp(LTE_WAIT_SECOND);
 
 	/* Config and Enable the Watchdog */
 	IWDG_Config(IWDG_TIMEOUT_1S);
-		
+
+	/* wait the motor A B C D find the 0 */
+	PDEBUG("\rThe motor A B C D run the 0 location.\n");
+	system_motor_self_checking();
+
 	/* create the system start task */
 	xTaskCreate(SunshineStart_Task, "SunshineStart_Task", SUNSHINESTART_TASK_RAM, NULL, SUNSHINESTART_TASK_PRIORITY, &vStartTaskHandler);
 	
@@ -114,14 +119,14 @@ void SunshineStart_Task(void *pvParameters)
 	xSerialTxQueue = xQueueCreate(USART_QUEUE_SIZE, (BaseType_t)sizeof(uint8_t *));
 	if (xSerialTxQueue == NULL)
 	{
-		PDEBUG("The xSerialTxQueue Create Failed.\n");
+		PDEBUG("\rThe xSerialTxQueue Create Failed.\n");
 	}
 
 	/* Create the Mutex */
 	xSerial485Mutex = xSemaphoreCreateMutex();
 	if (xSerial485Mutex == NULL)
 	{
-		PDEBUG("The xSerial485Mutex Create Failed.\n");
+		PDEBUG("\rThe xSerial485Mutex Create Failed.\n");
 	}
 	
 	/* create the system main task to control console by calculater sunrise and sunset. */
@@ -133,7 +138,7 @@ void SunshineStart_Task(void *pvParameters)
 
 	/* Deleted the SunshineStart_Task Task */
 	vTaskDelete(vStartTaskHandler);
-	PDEBUG("SunshineStart_Task is Delete.\n");
+	PDEBUG("\rSunshineStart_Task is Delete.\n");
 	
 	taskEXIT_CRITICAL();    /* Exit the critical zone */
 }

@@ -84,7 +84,7 @@ typedef struct {
 #define USART_DEBUG_BAUDRATE	115200	/* debug port baudrate */
 #define USART_485_BAUDRATE		9600    /* 485 port baudrate */
 #define USART_LTE_BAUDRATE		115200	/* lte moudle baudrate */
-#define USART_LCD_BAUDRATE		9600	/* lcd moudle baudrate */
+#define USART_LCD_BAUDRATE		115200	/* lcd moudle baudrate */
 
 /* 
  * macro: @DEBUG_PORT

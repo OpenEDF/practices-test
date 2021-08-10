@@ -44,6 +44,8 @@
 USART_BUFStruct USART_PORTDATA[PORT_NUMS];
 
 /* Private function prototypes -----------------------------------------------*/
+static void USARTx_SendByte( USART_TypeDef * USARTx, uint8_t ch);
+
 
 /* Private functions ---------------------------------------------------------*/
   
@@ -299,6 +301,23 @@ void System_USART_Init(void)
 }
 
 /**
+  * @function   USARTx_SendByte
+  * @brief      send a byte data to uart port.
+  * @param[in]  USARTx: The UART Port is to send data.
+  *				where x can be 1, 2, 3, 4, 5, 6 to select the USART or UART Peripher.
+  * @param[in]  ch: the byte data will be send.
+  * @retval     None.
+  */ 
+static void USARTx_SendByte( USART_TypeDef * USARTx, uint8_t ch)
+{
+	/* send a byte char to USART1 */
+	USART_SendData(USARTx, ch);	
+	/* wait the send finish */
+	while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);	
+}
+
+
+/**
   * @function   USARTx_Send_Data
   * @brief      send data byte by byte via uart.
   * @param[in]  USARTx: The UART Port is to send data.
@@ -310,17 +329,13 @@ void System_USART_Init(void)
 void USARTx_Send_Data(USART_TypeDef* USARTx, uint8_t *str, uint16_t count)
 {
 	/* send all data */
-	count--;
-	do
+	uint16_t index = 0;
+	do	/* send string */
 	{
-		USART_SendData(USARTx, *(str++));
-		/* wait the data send finish */
-		while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);	
+		USARTx_SendByte(USARTx, *(str + index));
+		index++;
 	}
-	while (count--);
-		
-	/* wait the data send finish */
-	while(USART_GetFlagStatus(USARTx, USART_FLAG_TC) == RESET);
+	while (index < count);
 }
 
 /**
@@ -333,19 +348,13 @@ void USARTx_Send_Data(USART_TypeDef* USARTx, uint8_t *str, uint16_t count)
   */ 
 void USARTx_Send_String(USART_TypeDef* USARTx, char *str)
 {
-	uint8_t index;
-	index = 0;
-
-	/* send string */
-	do
+	uint16_t index = 0;
+	do	/* send string */
 	{
-		USART_SendData(USARTx, *(str + index));
-		while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);
+		USARTx_SendByte(USARTx, *(str + index));
+		index++;
 	}
 	while (*(str + index) != '\0');
-
-	/* wait the send cpmplete */
-	while (USART_GetFlagStatus(USARTx, USART_FLAG_TC) == RESET);
 }
 
 /**
@@ -533,7 +542,7 @@ void USARTSend_Task(void *pvParameters)
 			if (portBuffer->port >= PORT_NUMS)
 			{
 				vPortFree(portBuffer);
-				continue;
+ 				continue;
 			}
 
 			portStr = &USART_PORTDATA[portBuffer->port];
@@ -567,7 +576,7 @@ void USARTSend_Task(void *pvParameters)
 					break;
 
 					default:
-						/* ... */
+						/* ... never */
 					break;
 				}
 			}

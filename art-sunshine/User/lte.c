@@ -65,12 +65,12 @@ void LTEReceiver_Task(void *pvParameters)
 	{
 		if ((xSemaphoreTake(LTE_infomation.LtePublishSemaphore ,portMAX_DELAY) == pdTRUE))
 		{
-			PDEBUG("The LTE moudles Receiver the Data.\n");			
+			PDEBUG("\rThe LTE moudles Receiver the Data.\n");			
 
 			/* Handler command from the server Active control */
 			usartbuffer = &USART_PORTDATA[USART_LTE];
 			usartbuffer->rxbuffer[usartbuffer->rxbuf_count++] = '\0';
-			PDEBUG("LTE Receiver Command: %s\n", usartbuffer->rxbuffer);
+			PDEBUG("\rvLTE Receiver Command: %s\n", usartbuffer->rxbuffer);
 
 			/* copy the command to array */
 			if (usartbuffer->rxbuf_count < USERCMD_MAXSIZE)
@@ -88,19 +88,19 @@ void LTEReceiver_Task(void *pvParameters)
 				/* Receiver the User command: Enter the exception mode */
 				Art_Sunshine_Info.mode = EXCEPTION_MODE;
 				Art_Sunshine_Info.serctl_status = control;
-				PDEBUG("Set the exception mode for user command");
+				PDEBUG("\rSet the exception mode for user command\n");
 			}
 			else if (strstr(cmdbuffer, "Exit") != NULL)
 			{
 				/* Receiver the User command: Exit the exception mode */
 				Art_Sunshine_Info.mode = NORMAL_MODE;
 				Art_Sunshine_Info.serctl_status = de_control;
-				PDEBUG("Set the normal mode for user command");
+				PDEBUG("\rSet the normal mode for user command\n");
 			}
 			else
 			{
 				/* command is invaild */
-				PDEBUG("The LTE moudles Received invaild Data.\n");
+				PDEBUG("\rThe LTE moudles Received invaild Data.\n");
 			}	
 		}
 
@@ -132,21 +132,21 @@ void LTE_DeInit(void)
 	LTE_infomation.LteResponeSemaphore = xSemaphoreCreateBinary();
 	if (LTE_infomation.LteResponeSemaphore == NULL)
 	{
-		PDEBUG("The LTE LteResponeSemaphore is Create Failed.\n");
+		PDEBUG("\rThe LTE LteResponeSemaphore is Create Failed.\n");
 	}
 	else
 	{
-		PDEBUG("The LTE LteResponeSemaphore is Created.\n");
+		PDEBUG("\rThe LTE LteResponeSemaphore is Created.\n");
 	}
 
 	LTE_infomation.LtePublishSemaphore = xSemaphoreCreateBinary();
 	if (LTE_infomation.LtePublishSemaphore == NULL)
 	{
-		PDEBUG("The LTE LtePublishSemaphore is Create Failed.\n");
+		PDEBUG("\rThe LTE LtePublishSemaphore is Create Failed.\n");
 	}
 	else
 	{
-		PDEBUG("The LTE LtePublishSemaphore is Created.\n");
+		PDEBUG("\rThe LTE LtePublishSemaphore is Created.\n");
 	}
 }
 
@@ -172,7 +172,7 @@ static PORT_BUF_FORMAT *LTE_DataPacking(Data_Type type, const char *data)
 	/* dynamic allocated memory */
 	if ((frame_data = pvPortMalloc(memsize)) == NULL)
 	{
-		PDEBUG("No more memeory to be allocated.\n");
+		PDEBUG("\rNo more memeory to be allocated.\n");
 		return NULL;
 	}
 
@@ -221,14 +221,14 @@ static FunStatus LTE_DataUnPack(Extend_Type cmd_type, PORT_BUF_FORMAT * rxackbuf
 	/* check the buffer vaild */
 	if (rxackbuffer == NULL)
 	{
-		PDEBUG("LTE UART Receiver buffer is no any data.\n");
+		PDEBUG("\rLTE UART Receiver buffer is no any data.\n");
 		return R_ERROR;
 	}
 
 	/* Find the OK character for each command type */
 	if (NULL == strstr((char *)rxackbuffer->buffer, "OK"))
 	{
-		PDEBUG("LTE UART Receiver buffer is no OK.\n");
+		PDEBUG("\rLTE UART Receiver buffer is no OK.\n");
 		return R_ERROR;
 	}
 
@@ -275,12 +275,12 @@ FunStatus LTE_TxRxDataProcess(Extend_Type cmd_type, Data_Type type, const char *
 	/* framing a cpmplete data */
 	txuartbuffer = LTE_DataPacking(type, databuf);
 	txuartbuffer->buffer[txuartbuffer->length++] = '\0';
-	PDEBUG("LTE SEND DATA: %s", txuartbuffer->buffer);
+	PDEBUG("\rLTE SEND DATA: %s\n", txuartbuffer->buffer);
 	
 	/* send the data to queue  */
 	if(xQueueSendToBack(xSerialTxQueue, &txuartbuffer, pdMS_TO_TICKS(100)) != pdPASS)
 	{
-		PDEBUG("UART_LTE Queue SEND message failed.\n");
+		PDEBUG("\rUART_LTE Queue SEND message failed.\n");
 		return R_ERROR;
 	}
 
@@ -292,7 +292,7 @@ FunStatus LTE_TxRxDataProcess(Extend_Type cmd_type, Data_Type type, const char *
 	{
 		if (xSemaphoreTake(LTE_infomation.LteResponeSemaphore, pdMS_TO_TICKS(100)) != pdPASS)
 		{
-			PDEBUG("UART_LTE Queue RECEIVER message failed.\n");
+			PDEBUG("\rUART_LTE Queue RECEIVER message failed.\n");
 			continue;
 		}
 		else
@@ -306,7 +306,7 @@ FunStatus LTE_TxRxDataProcess(Extend_Type cmd_type, Data_Type type, const char *
 			{
 				/* Jump out */
 				uartPtr->rxbuffer[uartPtr->rxbuf_count++] = '\0';
-				PDEBUG("LTE ACK DATA: %s", uartPtr->rxbuffer);
+				PDEBUG("\rLTE ACK DATA: %s\n", uartPtr->rxbuffer);
 				memset(uartPtr->rxbuffer, 0x00, uartPtr->rxbuf_count);
 				uartPtr->rxbuf_count = 0;
 				return R_OK;
@@ -320,19 +320,20 @@ FunStatus LTE_TxRxDataProcess(Extend_Type cmd_type, Data_Type type, const char *
 				rxuartbuffer->length = uartPtr->rxbuf_count;
 				memcpy(rxuartbuffer->buffer, uartPtr->rxbuffer, rxuartbuffer->length);
 				rxuartbuffer->buffer[uartPtr->rxbuf_count++] = '\0';
-				PDEBUG("LTE ACK DATA: %s", rxuartbuffer->buffer);
+				PDEBUG("\rLTE ACK DATA: %s\n", rxuartbuffer->buffer);
 
 				/* clear and set 0 to uart[LTE] buffer */
 				memset(uartPtr->rxbuffer, 0x00, uartPtr->rxbuf_count);
 				uartPtr->rxbuf_count = 0;
 			}
 		}
+
 		/* first check data according the cmd_type */
 		if (R_ERROR == LTE_DataUnPack(cmd_type, rxuartbuffer))
 		{
 			vPortFree(rxuartbuffer);
 			xSemaphoreGive(LTE_infomation.LteResponeSemaphore);
-			PDEBUG("LTE UART Receiver data Error.\n");
+			PDEBUG("\rLTE UART Receiver data Error.\n");
 			return R_ERROR;
 		}
 
@@ -452,7 +453,7 @@ void LTE_ConnetNetwork(void)
 		
 		/* show to the lcd */
 		Send_DataTo_LCD("CIRF(300,132,8,2);");
-		PDEBUG("LTE Device connection successful!\n");
+		PDEBUG("\rLTE Device connection successful!\n");
 	}
 	else
 	{
@@ -460,8 +461,8 @@ void LTE_ConnetNetwork(void)
 		/* show to the lcd */
 		Send_DataTo_LCD("CIRF(300,132,8,1);");
 		
-		PDEBUG("LTE Device connection Failure!\n");
-		PDEBUG("Please Check it!\n");
+		PDEBUG("\rLTE Device connection Failure!\n");
+		PDEBUG("\rPlease Check it!\n");
 
 		/* Reset until the device is connected to the network. */
 		NVIC_SystemReset();
@@ -485,7 +486,7 @@ FunStatus LTE_SendMessage(void)
 	if (result != R_OK)
 	{
 		Art_Sunshine_Info.lte_status = offline;
-		PDEBUG(" LTE Device is not connected to the network.\n");
+		PDEBUG("\nLTE Device is not connected to the network.\n");
 	}
 
 	return result;
@@ -556,7 +557,7 @@ FunStatus LTE_QueryPIN(void)
 	/* find the READY */
 	if (NULL == strstr((char *)ackbuffer->buffer, "READY"))
 	{
-		PDEBUG("AT+CPIN Cmmand ACK ERROR.\n");
+		PDEBUG("\rAT+CPIN Cmmand ACK ERROR.\n");
 		result = R_ERROR;
 	}
 	else
@@ -598,7 +599,7 @@ FunStatus LTE_QuerySignal(void)
 	}
 	else if (ch[0] == 0x0A)
 	{
-		PDEBUG("The LTE Rssi Value Error.\n");
+		PDEBUG("\rThe LTE Rssi Value Error.\n");
 	}
 
 	/* check rssi */
@@ -872,7 +873,7 @@ FunStatus LTE_SendData(void)
 	}
 	else
 	{
-		PDEBUG("The data size is more than 1024.\n");
+		PDEBUG("\rThe data size is more than 1024.\n");
 	}
 	
 	/* return the result */
@@ -907,9 +908,17 @@ RTC_Type LTE_QueryRTC(void)
 		curdate.rtc_time.time_seconds = ((ackbuffer->buffer[25] - 48) * 10) + ackbuffer->buffer[26] - 48;
 
 		vPortFree(ackbuffer);
+		return curdate;
 	}
 	
 	/* return the current data */
+	curdate.rtc_date.date_year = 2021;
+	curdate.rtc_date.date_month = 8;
+	curdate.rtc_date.date_day = 8;
+
+	curdate.rtc_time.time_hours = 13;
+	curdate.rtc_time.time_minutes = 0;
+	curdate.rtc_time.time_seconds = 0;
 	return curdate;
 }
 

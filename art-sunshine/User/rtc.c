@@ -255,7 +255,7 @@ void System_RTC_Init(void)
 	/* RTC basic struct Initalization */
 	RTC_Config_Init();
 
-	/* Set the time and date 2020/08/18 13:25:00  */
+	/* Set the time and date 2020/08/18 13:00:00  */
 	initdate.rtc_date.date_year = 0x07E4;  /* 2020 = 2000 + 20 */
 	initdate.rtc_date.date_month = 0x08;
 	initdate.rtc_date.date_day = 0x12;
@@ -265,7 +265,9 @@ void System_RTC_Init(void)
 	initdate.rtc_time.time_seconds = 00;
 	RTC_TimeAndDate_Set(&initdate);
 
-	PDEBUG("Set the Init time is: 2020/08/18 13:00:00\n");
+	PDEBUG("\rSet the Init time is: %d/%02d/%02d %02d:%02d:%02d\n", initdate.rtc_date.date_year, initdate.rtc_date.date_month, \
+		initdate.rtc_date.date_day, initdate.rtc_time.time_hours, initdate.rtc_time.time_minutes, \
+		initdate.rtc_time.time_seconds);
 
 	/* RTC Alarm interrupt */
 	RTC_Alarm_Config(RTC_Alarm_A, &set_alarm_time);

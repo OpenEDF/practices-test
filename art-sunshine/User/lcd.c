@@ -24,6 +24,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "lcd.h"
+#include "uart.h"
+#include <string.h>
 
 /** @addtogroup LCD_Driver
   * @{
@@ -37,10 +39,10 @@
 /* Private typedef -----------------------------------------------------------*/
 
 /* Private define ------------------------------------------------------------*/
+#define LCD_DATA_BUFFER_SIZE 64		/* lcd data send buffer */
 
 /* Private variables ---------------------------------------------------------*/
 SemaphoreHandle_t xLCDBinarySemaphore = NULL;
-
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -61,38 +63,44 @@ static FunStatus Check_Result(void);
   */  
 FunStatus Send_DataTo_LCD(char *data)
 {
-	char *txbuffer;
+	PORT_BUF_FORMAT *txbuffer;
 	uint8_t templen;
 	/* allocated the memory */
 	if (NULL == (txbuffer = pvPortMalloc(LCD_MAXDATA_SZIE)))
 	{
-		PDEBUG("No more memory to be allocate.\n");
+		PDEBUG("\rNo more memory to be allocate.\n");
 		return R_ERROR;
 	}
-
+	
+	txbuffer->port = USART_LCD;	/* port and length */
 	templen = strlen(data);
+	txbuffer->length = templen;
+
 	/* check parameters */
-	if ((templen > 100) || (data == NULL))
+	if ((templen > 60) || (templen == 0))
 	{
 		vPortFree(txbuffer);
 		return R_ERROR;
 	}
 		
 	/* Frames the data */
-	memcpy(txbuffer, data, templen);
-	strcat(txbuffer, "\r\n");
+	memcpy(txbuffer->buffer, data, templen);
+	txbuffer->buffer[templen] = '\r';
+	txbuffer->buffer[templen + 1] = '\n';	/* must add the \r\n */
+	txbuffer->buffer[templen + 2] = '\0';
+	txbuffer->length = templen + 2;
 	
 	/* Send to queue */
 	if(xQueueSendToBack(xSerialTxQueue, &txbuffer, pdMS_TO_TICKS(100)) != pdPASS)
 	{
-		PDEBUG("LCD Queue send message failed.\n");
+		PDEBUG("\rLCD Queue send message failed.\n");
 		return R_ERROR;
 	}
 	
 	/* Check the communcation result */
 	if (Check_Result() == R_ERROR)
 		return R_ERROR;
-	
+		
 	/* Return */
 	return R_OK;
 }
@@ -110,21 +118,20 @@ void LCD_Init(void)
 	/* check cerated */
 	if (xLCDBinarySemaphore == NULL)
 	{
-		PDEBUG("The lcd xLCDBinarySemaphore is Create Failed.\n");
+		PDEBUG("\rThe lcd xLCDBinarySemaphore is Create Failed.\n");
 	}
 	else
 	{
-		PDEBUG("xLCDBinarySemaphore is Created.\n");
+		PDEBUG("\rxLCDBinarySemaphore is Created.\n");
 	}
 
 	/* send the command set device */
-	Send_DataTo_LCD("CLR(0);"); /* background */
-	Send_DataTo_LCD("DIR(1);"); /* directly */
-	Send_DataTo_LCD("BL(0);");  /* lighting */
-	Send_DataTo_LCD("SBC(0);"); /* under color */
-
+	//lcd_uart_tx_str("CLR(0);");		/* background */
+	//lcd_uart_tx_str("DIR(1);");		/* directly */
+	//lcd_uart_tx_str("BL(0);");		/* lighting */
+	//lcd_uart_tx_str("SBC(0);");		/* under color */
 	/* show the 'Loading...' */
-	Send_DataTo_LCD("DCV32(120,80,'Loading...',2");
+	lcd_uart_tx_str("CLR(0);DIR(1);BL(0);SBC(0);DCV32(120,80,'Loading...',2)");
 
 	/*
 		+++++++++++++++++++++++++++
@@ -134,7 +141,7 @@ void LCD_Init(void)
 	    +++++++++++++++++++++++++++
 	*/
 
-}
+ }
 
 /**
   * @function   Check_Result
@@ -157,7 +164,7 @@ static FunStatus Check_Result(void)
 	{
 		if (xSemaphoreTake(xLCDBinarySemaphore, pdMS_TO_TICKS(100)) != pdPASS)
 		{
-			PDEBUG("LCD Receiver message failed.\n");
+			PDEBUG("\rLCD Receiver message failed.\n");
 			continue;
 		}
 		else
@@ -175,6 +182,23 @@ static FunStatus Check_Result(void)
 
 	/* return */
 	return ret;
+}
+
+/**
+  * @function   lcd_uart_tx_str
+  * @brief      send the display string by uart. 
+  * @param[in]  str: the string will be send to lcd.        
+  * @retval     None.
+  */ 
+void lcd_uart_tx_str(char *str)
+{
+	char temp[LCD_DATA_BUFFER_SIZE] = {0};
+	
+	/* ready data */
+	memcpy(temp, str, strlen(str));
+	strcat(temp, "\r\n");
+	/* send data */
+	USARTx_Send_String(USART2, temp);
 }
 
 /**
