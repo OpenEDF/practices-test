@@ -107,11 +107,10 @@ void SunshineControl_Task(void *pvParameters)
 			for (uint8_t index = 0; index < POINTER_MAX_MOTOR; index++)
 			{
 				motor_t = &motor_opr[index];
-				if (motor_state >> == 0x00)
+				if ((motor_state >> index) & 0x01)
 				{
 					motor_self_checking(motor_t);
 				}
-					
 			}
 		}
 		vTaskDelay(pdMS_TO_TICKS(Art_Sunshine_Info.control_interval));
@@ -510,7 +509,9 @@ Suntime_Type ClaculSun_RiseSet(RTC_Type data_time, Lati_Longi latlong)
   */
 void Normal_Mode_Operation(uint32_t second_value, RTC_Type date_time)
 {
+	PDEBUG("\rSystem entry the normal mode !\n");
 	Alta_Azim altazi_value;
+	float32_t angle;
 	
 	/* check the time is day or night? */
 	if ((second_value > Art_Sunshine_Info.sunrise_set.sunrise_second) && (second_value < Art_Sunshine_Info.sunrise_set.sunset_second))
@@ -522,9 +523,28 @@ void Normal_Mode_Operation(uint32_t second_value, RTC_Type date_time)
 		PDEBUG("\rDate: %d/%02d/%02d - Time: %02d:%02d:%02d\n", date_time.rtc_date.date_year, date_time.rtc_date.date_month, date_time.rtc_date.date_day, \
 												   date_time.rtc_time.time_hours, date_time.rtc_time.time_minutes, date_time.rtc_time.time_seconds);
 		PDEBUG("\rThe altazi_value is: altangle: %f\t azimuths: %f\t\n", altazi_value.altangles, altazi_value.azimuths);
+
+		/* Operte A motor to run */
+		angle = altazi_value.altangles - mootra.angle;
+		if (angle > 0.0f)
+			motor_run(angle);
+
+		/* Operte B motor to run */
+
+		/* Operte C motor to run */
+
+		/* Operte D motor to run */
 	}
 	else
 	{
+		/* Operate the A motor to definite state */
+
+		/* Operate the B motor to definite state */
+
+		/* Operate the C motor to definite state */
+
+		/* Operate the D motor to definite state */
+		
 		PDEBUG("\rThe sunrise time: %d : %d\n", Art_Sunshine_Info.sunrise_set.sunrise_time.time_hours,  Art_Sunshine_Info.sunrise_set.sunrise_time.time_minutes);
 		PDEBUG("\rGood night!\n");
 	}
@@ -539,7 +559,17 @@ void Normal_Mode_Operation(uint32_t second_value, RTC_Type date_time)
   */
 void Exception_Mode_Operation(uint32_t second_value, RTC_Type date_time)
 {
-	
+	PDEBUG("\rSystem entry the exception mode !\n");
+
+	/* display the exception cause */
+
+	/* Operate the A motor to definite state */
+
+	/* Operate the B motor to definite state */
+
+	/* Operate the C motor to definite state */
+
+	/* Operate the D motor to definite state */
 }
 
 /**
@@ -551,6 +581,8 @@ void Exception_Mode_Operation(uint32_t second_value, RTC_Type date_time)
   */
 void Clear_Mode_Operation(uint32_t second_value, RTC_Type date_time)
 {
+	PDEBUG("\rSystem entry the clear mode !\n");
+
 	
 }
 

@@ -49,16 +49,16 @@
  * struct: @ Loacal latitude and longitude. 
 */
 typedef struct {
-	float latitude;			   /* latitude value  */
-	float longitude;		   /* longitude value */
+	float32_t latitude;			   /* latitude value  */
+	float32_t longitude;		   /* longitude value */
 } Lati_Longi;
 
 /* 
  * struct: @ The Sun pitch Angle and azimuth Angle. 
 */
 typedef struct {
-	float altangles;				/* pitch Angle value  */
-	float azimuths;				    /* azimuth Angle value */
+	float32_t altangles;		  /* pitch Angle value  */
+	float32_t azimuths;			  /* azimuth Angle value */
 } Alta_Azim;
 
 /* 

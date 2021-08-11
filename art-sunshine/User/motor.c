@@ -449,6 +449,7 @@ static void motor_init(motor_operation_t *motor_t, motor_type_m motor_local, uin
     motor_t->motor_pwm_pluse = motor_pwm_pluse;
     motor_t->motor_pwm_period = motor_pwm_period;
 	motor_t->motor_pwm_total_pluse = 0x00;
+	motor_t->motor_angle = 0.0f;
     
     /* Initzlization the special data */
     motor_t->motor_gpio_init = motor_gpio_init;
@@ -826,16 +827,16 @@ uint8_t get_system_motor_check_state(void)
 	
 	/* get the motor state */
 	motor_t =  &motor_opr[POINTER_D_MOTOR];
-	state = state | (get_motor_check_state(motor_t) << 3);
+	state |= (get_motor_check_state(motor_t) << 3);
 
 	motor_t =  &motor_opr[POINTER_C_MOTOR];
-	state = state | (get_motor_check_state(motor_t) << 2);
+	state |= (get_motor_check_state(motor_t) << 2);
 
 	motor_t =  &motor_opr[POINTER_B_MOTOR];
-	state = state | (get_motor_check_state(motor_t) << 1);
+	state |= (get_motor_check_state(motor_t) << 1);
 
 	motor_t =  &motor_opr[POINTER_A_MOTOR];
-	state = state | get_motor_check_state(motor_t);
+	state |= get_motor_check_state(motor_t);
 	
 	return state;
 }

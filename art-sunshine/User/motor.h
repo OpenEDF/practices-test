@@ -75,6 +75,7 @@ typedef struct {
 	uint32_t motor_pwm_period;          /* PWM period */
 	uint32_t motor_pwm_total_pluse;		/* the cumulative of the motor operation, indicating the current position */
 	uint16_t motor_pwm_pluse;           /* PWM pluse */
+	float32_t motor_angle;				/* motor work angle */
 	uint16_t reserved;
 	void (*motor_gpio_init)(motor_type_m motor);   /* init the gpio pin for the motor */
     void (*motor_timer_init)(motor_type_m motor, uint32_t period, uint16_t pluse_count);    /* init the timer */

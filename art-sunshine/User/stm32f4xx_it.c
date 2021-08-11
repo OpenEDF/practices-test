@@ -398,6 +398,7 @@ void EXTI9_5_IRQHandler(void)
 		motor->motor_pluse_count = 0;
 		motor_control_stop(motor);
 		motor->motor_pwm_total_pluse = 0;
+		motor->motor_angle = 0.0f;
 
 		/* update the motor state */
 		motor->motor_work = MOTOR_WORK_OK;
@@ -413,6 +414,7 @@ void EXTI9_5_IRQHandler(void)
 		motor->motor_pluse_count = 0;
 		motor_control_stop(motor);
 		motor->motor_pwm_total_pluse = 0;
+		motor->motor_angle = 0.0f;
 
 		/* update the motor state */
 		motor->motor_work = MOTOR_WORK_OK;
@@ -428,6 +430,7 @@ void EXTI9_5_IRQHandler(void)
 		motor->motor_pluse_count = 0;
 		motor_control_stop(motor);
 		motor->motor_pwm_total_pluse = 0;
+		motor->motor_angle = 0.0f;
 
 		/* update the motor state */
 		motor->motor_work = MOTOR_WORK_OK;
@@ -443,6 +446,7 @@ void EXTI9_5_IRQHandler(void)
 		motor->motor_pluse_count = 0;
 		motor_control_stop(motor);
 		motor->motor_pwm_total_pluse = 0;
+		motor->motor_angle = 0.0f;
 
 		/* update the motor state */
 		motor->motor_work = MOTOR_WORK_OK;
