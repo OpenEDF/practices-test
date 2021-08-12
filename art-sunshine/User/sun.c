@@ -117,6 +117,51 @@ void SunshineControl_Task(void *pvParameters)
 	}
 }
 
+float_32_t testxx(float_32_t sun_elevation_angle, float_32_t fixed_reflex_angle, )
+{
+    float_32_t mirror_elevation_angle;
+    float_32_t temp_reflex_angle;
+
+    float_32_t error = 180.0f;
+    /* check the parameters */
+    if ((sun_elevation_angle < 0.0f || sun_elevation_angle > 90.0f) || (fixed_reflex_angle <= 0.0f || fixed_reflex_angle > 90.00f))
+    {
+        PDEBUG("\rThe input parameters is invalid\n");
+        return error;
+    }
+
+    /* calculater the reflex angle */
+    if (time == am)
+    {
+        /* AM */
+        //temp_reflex_angle = (90.0f - fixed_reflex_angle) + (90.0f - sun_elevation_angle);
+        temp_reflex_angle = 180.0f - fixed_reflex_angle - sun_elevation_angle;
+        temp_reflex_angle /= 2.0f;
+        mirror_elevation_angle = 90.0f - temp_reflex_angle;
+
+        if (sun_elevation_angle < fixed_reflex_angle)
+        {
+            mirror_elevation_angle = 0.0 - mirror_elevation_angle;
+        }
+    }
+    else
+    {
+        /* PM */
+        //temp_reflex_angle = (90.0f - fixed_reflex_angle) - sun_elevation_angle);
+        temp_reflex_angle = 90.0f - fixed_reflex_angle - sun_elevation_angle;
+        temp_reflex_angle /= 2.0f;
+        mirror_elevation_angle = 90.0f - temp_reflex_angle;
+
+        /* Note taht the reverse incident angle is consistent with the normal incident angle */
+        if (sun_elevation_angle < fixed_reflex_angle)
+        {
+            mirror_elevation_angle = 0.0 - mirror_elevation_angle;
+        }
+    }
+
+    /* return angle */
+    return mirror_elevation_angle;
+}
 /* The "workhorse" function for sun rise/set times */
 static int __sunriset__( int year, int month, int day, float lon, float lat,
                   float altit, int upper_limb, float *trise, float *tset )
