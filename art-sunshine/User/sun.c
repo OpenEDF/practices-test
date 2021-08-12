@@ -62,7 +62,6 @@ void SunshineControl_Task(void *pvParameters)
 	RTC_Type curtime;
 	uint32_t curtime_second;
 	uint8_t motor_state = 0x00; 
-	uint8_t temp;
 	motor_operation_t *motor_t;
 	vTaskDelay(pdMS_TO_TICKS(5000));	/* wait the motor selt chech finish */
 	
@@ -117,51 +116,6 @@ void SunshineControl_Task(void *pvParameters)
 	}
 }
 
-float_32_t testxx(float_32_t sun_elevation_angle, float_32_t fixed_reflex_angle, )
-{
-    float_32_t mirror_elevation_angle;
-    float_32_t temp_reflex_angle;
-
-    float_32_t error = 180.0f;
-    /* check the parameters */
-    if ((sun_elevation_angle < 0.0f || sun_elevation_angle > 90.0f) || (fixed_reflex_angle <= 0.0f || fixed_reflex_angle > 90.00f))
-    {
-        PDEBUG("\rThe input parameters is invalid\n");
-        return error;
-    }
-
-    /* calculater the reflex angle */
-    if (time == am)
-    {
-        /* AM */
-        //temp_reflex_angle = (90.0f - fixed_reflex_angle) + (90.0f - sun_elevation_angle);
-        temp_reflex_angle = 180.0f - fixed_reflex_angle - sun_elevation_angle;
-        temp_reflex_angle /= 2.0f;
-        mirror_elevation_angle = 90.0f - temp_reflex_angle;
-
-        if (sun_elevation_angle < fixed_reflex_angle)
-        {
-            mirror_elevation_angle = 0.0 - mirror_elevation_angle;
-        }
-    }
-    else
-    {
-        /* PM */
-        //temp_reflex_angle = (90.0f - fixed_reflex_angle) - sun_elevation_angle);
-        temp_reflex_angle = 90.0f - fixed_reflex_angle - sun_elevation_angle;
-        temp_reflex_angle /= 2.0f;
-        mirror_elevation_angle = 90.0f - temp_reflex_angle;
-
-        /* Note taht the reverse incident angle is consistent with the normal incident angle */
-        if (sun_elevation_angle < fixed_reflex_angle)
-        {
-            mirror_elevation_angle = 0.0 - mirror_elevation_angle;
-        }
-    }
-
-    /* return angle */
-    return mirror_elevation_angle;
-}
 /* The "workhorse" function for sun rise/set times */
 static int __sunriset__( int year, int month, int day, float lon, float lat,
                   float altit, int upper_limb, float *trise, float *tset )
@@ -556,7 +510,10 @@ void Normal_Mode_Operation(uint32_t second_value, RTC_Type date_time)
 {
 	PDEBUG("\rSystem entry the normal mode !\n");
 	Alta_Azim altazi_value;
-	float32_t angle;
+	float32_t motor_angle;
+	xm_of_day_m cur_xm;
+	float32_t run_angle;
+	motor_operation_t *motor_t;
 	
 	/* check the time is day or night? */
 	if ((second_value > Art_Sunshine_Info.sunrise_set.sunrise_second) && (second_value < Art_Sunshine_Info.sunrise_set.sunset_second))
@@ -570,11 +527,69 @@ void Normal_Mode_Operation(uint32_t second_value, RTC_Type date_time)
 		PDEBUG("\rThe altazi_value is: altangle: %f\t azimuths: %f\t\n", altazi_value.altangles, altazi_value.azimuths);
 
 		/* Operte A motor to run */
-		angle = altazi_value.altangles - mootra.angle;
-		if (angle > 0.0f)
-			motor_run(angle);
+		motor_t = &motor_opr[POINTER_A_MOTOR];
+		cur_xm = calcul_sun_time_am_pm(Art_Sunshine_Info.sunrise_set, date_time);
+		motor_angle = calcul_angle_mirror_elevation(altazi_value.altangles, SYSTEM_FIXED_REFLEX_ANGLE, cur_xm);
+		if (motor_angle < 0.0f)		
+		{
+			arm_abs_f32(&motor_angle, &run_angle, 1);
+			if ((motor_t->motor_angle >= 0.0f) || (motor_t->motor_angle < 90.0f))
+			{
+				run_angle -= motor_t->motor_angle;
+
+				if(run_angle > 0.0f)	/* oppositver */
+				{
+					PDEBUG("\rSystem motor A rotating %f , Direction: MOTOR_DIR_OPPOSITE!\n", run_angle);
+					control_motor_run(motor_t, &run_angle, MOTOR_DIR_OPPOSITE);
+				}
+				else
+				{
+					PDEBUG("\rSystem motor A rotating %f , Direction: MOTOR_DIR_POSITIVER!\n", run_angle);
+					control_motor_run(motor_t, &run_angle, MOTOR_DIR_POSITIVER);
+				}	
+			}
+			else
+			{
+				PDEBUG("\rSystem Motor A runing error!\n");
+			}
+			
+		}
+		else	/* positive direction */
+		{
+			if ((motor_t->motor_angle >= 90.0f) || (motor_t->motor_angle < 180.0f))
+			{
+				run_angle -= motor_t->motor_angle;
+
+				if(run_angle > 0.0f)	/* oppositver */
+				{
+					PDEBUG("\rSystem motor A rotating %f , Direction: MOTOR_DIR_OPPOSITE!\n", run_angle);
+					control_motor_run(motor_t, &run_angle, MOTOR_DIR_OPPOSITE);
+				}
+				else
+				{
+					PDEBUG("\rSystem motor A rotating %f , Direction: MOTOR_DIR_POSITIVER!\n", run_angle);
+					control_motor_run(motor_t, &run_angle, MOTOR_DIR_POSITIVER);
+				}	
+			}
+			else
+			{
+				PDEBUG("\rSystem Motor A runing error!\n");
+			}
+		}
 
 		/* Operte B motor to run */
+		motor_t = &motor_opr[POINTER_B_MOTOR];
+		motor_angle = sync_motor_azimuth_sun(altazi_value.azimuths);
+		run_angle = motor_angle - motor_t->motor_angle;
+		if (run_angle > 0.0f)
+		{
+			PDEBUG("\rSystem motor B rotating %f , Direction: MOTOR_DIR_POSITIVER!\n", run_angle);
+			control_motor_run(motor_t, &run_angle, MOTOR_DIR_POSITIVER);
+		}
+		else
+		{
+			PDEBUG("\rSystem Motor B runing error!\n");
+		}
 
 		/* Operte C motor to run */
 
@@ -629,6 +644,106 @@ void Clear_Mode_Operation(uint32_t second_value, RTC_Type date_time)
 	PDEBUG("\rSystem entry the clear mode !\n");
 
 	
+}
+
+/**
+  * @name	calcul_angle_mirror_elevation
+  * @brief	calculater the angle of mirror and elevation.
+  * @param[in]	sun_elevation_angle: sun elevation angle.
+  * @param[in]	fixed_reflex_angle: fixed angle for reflex angle.
+  * @param[in]  xm: the AM or PM of day.
+  * @retval 	the angle for mirror and evelation.
+  *
+  *    \        /     |\
+  *     \	   /	  |\
+  *      \    /	      |\
+  *       \  /		  |\
+  *        \/		  |\
+  *---------------------
+  *\\\\\\\\\\\\\\\\\\\\
+  */
+float32_t calcul_angle_mirror_elevation(float32_t sun_elevation_angle, float32_t fixed_reflex_angle, xm_of_day_m xm)
+{
+    float32_t mirror_elevation_angle;
+    float32_t temp_reflex_angle;
+    float32_t error = 180.0f;
+	
+    /* check the parameters */
+    if ((sun_elevation_angle < 0.0f || sun_elevation_angle > 90.0f) || (fixed_reflex_angle <= 0.0f || fixed_reflex_angle > 90.00f))
+    {
+        PDEBUG("\rThe input parameters is invalid!\n");
+        return error;
+    }
+
+    /* calculater the reflex angle */
+    if (xm == AM_OF_DAY)	/* [0 ... 90] */
+    {
+        /* AM */
+        //temp_reflex_angle = (90.0f - fixed_reflex_angle) + (90.0f - sun_elevation_angle);
+        temp_reflex_angle = 180.0f - fixed_reflex_angle - sun_elevation_angle;
+        temp_reflex_angle /= 2.0f;
+        mirror_elevation_angle = 90.0f - temp_reflex_angle;
+
+        if (sun_elevation_angle <= fixed_reflex_angle)		/* when sun_elevation_angle = fixed_reflex_angle */
+        {
+            mirror_elevation_angle = -mirror_elevation_angle;
+        }
+    }
+    else	/* PM: [90 ... 0] */
+    {
+        /* PM */
+        //temp_reflex_angle = (90.0f - fixed_reflex_angle) - sun_elevation_angle);
+        temp_reflex_angle = 90.0f - fixed_reflex_angle - sun_elevation_angle;
+        temp_reflex_angle /= 2.0f;
+        mirror_elevation_angle = 90.0f - temp_reflex_angle;
+
+        /* Note taht the reverse incident angle is consistent with the normal incident angle */
+        if (sun_elevation_angle <= (90.0f - fixed_reflex_angle))
+        {
+            mirror_elevation_angle = -mirror_elevation_angle;	/* control motor running in the opposite irection */
+        }
+    }
+    /* return angle */
+    return mirror_elevation_angle;
+}
+
+/**
+  * @name	Clear_Mode_Operation
+  * @brief	Excption mode opeartion control console.
+  * @param[in]	sun_azimuth_angle: sun azimuth.
+  * @param[in]	date_time: current time and date.
+  * @retval 	None.
+  */
+float32_t sync_motor_azimuth_sun(float32_t sun_azimuth_angle)
+{
+	/* check data */
+	if ((sun_azimuth_angle < 0.0f) || (sun_azimuth_angle > 360.0f))
+		return 0.0f;
+
+    /* return angle */
+    return sun_azimuth_angle;
+}
+
+/**
+  * @name	calcul_sun_time_am_pm
+  * @brief	calicluater the current is AM or PM.
+  * @param[in]	rise_set_time: sunrise and sunset time.
+  * @param[in]	cur_time: current time.
+  * @retval 	the pm or am.
+  */
+xm_of_day_m calcul_sun_time_am_pm(Suntime_Type rise_set_time, RTC_Type cur_time)
+{
+	/* sunset time - sunrise time / 2 = sun time at noon */
+	uint32_t sun_noon_second;
+	uint32_t cur_time_second;
+	sun_noon_second = (rise_set_time.sunset_second - rise_set_time.sunrise_second) / 2;
+	cur_time_second = cur_time.rtc_time.time_hours * 3600 + cur_time.rtc_time.time_minutes * 60 + cur_time.rtc_time.time_seconds;
+
+	/* return am or pm */
+	if (cur_time_second <= sun_noon_second) 
+		return AM_OF_DAY;
+	else
+		return PM_OF_DAY;
 }
 
 
