@@ -46,11 +46,135 @@
 /* Private function prototypes -----------------------------------------------*/
 
 /* Private functions ---------------------------------------------------------*/
-  
+static void system_altangles_motor_running(motor_operation_t *motor_t, Alta_Azim altazi_value, RTC_Type date_time);
+static void system_azimuths_motor_running(motor_operation_t *motor_t, Alta_Azim altazi_value);
+static void system_motor_night_work_state(void);
 /** @defgroup SUN_Private_Functions
   * @{
   */
-  
+
+/**
+  * @name	system_altangles_motor_running
+  * @brief	system control altangles motor running.
+  * @param[in]	motor_t: the motor will be control.
+  * @param[in]  altazi_value: current sun altangles and azimuths.
+  * @param[in]	date_time: current time and date.
+  * @retval 	None.
+  */
+static void system_altangles_motor_running(motor_operation_t *motor_t, Alta_Azim altazi_value, RTC_Type date_time)
+{
+	float32_t motor_angle;
+	xm_of_day_m cur_xm;
+	float32_t run_angle;
+
+	/* control motor runing */ 
+	cur_xm = calcul_sun_time_am_pm(Art_Sunshine_Info.sunrise_set, date_time);
+	motor_angle = calcul_angle_mirror_elevation(altazi_value.altangles, SYSTEM_FIXED_REFLEX_ANGLE, cur_xm);
+	if (motor_angle < 0.0f)		
+	{
+		arm_abs_f32(&motor_angle, &run_angle, 1);
+		if ((motor_t->motor_angle >= 0.0f) || (motor_t->motor_angle < 90.0f))
+		{
+			run_angle -= motor_t->motor_angle;
+
+			if(run_angle > 0.0f)	/* oppositver */
+			{
+				PDEBUG("\rSystem motor A rotating %f , Direction: MOTOR_DIR_OPPOSITE!\n", run_angle);
+				control_motor_run(motor_t, &run_angle, MOTOR_DIR_OPPOSITE);
+			}
+			else
+			{
+				PDEBUG("\rSystem motor A rotating %f , Direction: MOTOR_DIR_POSITIVER!\n", run_angle);
+				control_motor_run(motor_t, &run_angle, MOTOR_DIR_POSITIVER);
+			}	
+		}
+		else
+		{
+			PDEBUG("\rSystem Motor A runing error!\n");
+		}
+			
+	}
+	else	/* positive direction */
+	{
+		if ((motor_t->motor_angle >= 90.0f) || (motor_t->motor_angle < 180.0f))
+		{
+			run_angle -= motor_t->motor_angle;
+			if(run_angle > 0.0f)	/* oppositver */
+			{
+				PDEBUG("\rSystem motor A/C rotating %f , Direction: MOTOR_DIR_OPPOSITE!\n", run_angle);
+				control_motor_run(motor_t, &run_angle, MOTOR_DIR_OPPOSITE);
+			}
+			else
+			{
+				PDEBUG("\rSystem motor A/C rotating %f , Direction: MOTOR_DIR_POSITIVER!\n", run_angle);
+				control_motor_run(motor_t, &run_angle, MOTOR_DIR_POSITIVER);
+			}	
+		}
+		else
+		{
+			PDEBUG("\rSystem Motor A/C runing error!\n");
+		}
+	}
+}
+
+/**
+  * @name	system_azimuths_motor_running
+  * @brief	system control azimuths motor running.
+  * @param[in]	motor_t: the motor will be control.
+  * @param[in]  altazi_value: current sun altangles and azimuths.
+  * @retval 	None.
+  */
+static void system_azimuths_motor_running(motor_operation_t *motor_t, Alta_Azim altazi_value)
+{
+	float32_t run_angle;
+	float32_t motor_angle;
+
+	/* control motor runing */
+	motor_angle = sync_motor_azimuth_sun(altazi_value.azimuths);
+	run_angle = motor_angle - motor_t->motor_angle;
+	if (run_angle > 0.0f)
+	{
+		PDEBUG("\rSystem motor B/D rotating %f , Direction: MOTOR_DIR_POSITIVER!\n", run_angle);
+		control_motor_run(motor_t, &run_angle, MOTOR_DIR_POSITIVER);
+	}
+	else
+	{
+		PDEBUG("\rSystem Motor B/D runing error!\n");
+	}
+}
+
+/**
+  * @name	system_motor_night_work_state
+  * @brief	motor work state for after sunset.
+  * @param[in]	None.
+  * @retval 	None.
+  */
+static void system_motor_night_work_state(void)
+{
+	motor_operation_t *motor_t;
+	float32_t run_angle;
+	PDEBUG("\rSystem in night mode, motor stop!\n");
+	/* motor a and motor c set 90 angle */
+
+	for (uint8_t count = POINTER_A_MOTOR; count < POINTER_MAX_MOTOR; count++)
+	{
+		motor_t = &motor_opr[count];
+		if ((count == POINTER_A_MOTOR) || (count == POINTER_C_MOTOR))
+		{
+			run_angle = motor_t->motor_angle - 90.0f;
+			PDEBUG("\rSystem motor A&C rotating %f , Direction: MOTOR_DIR_OPPOSITE!\n", run_angle);
+			control_motor_run(motor_t, &run_angle, MOTOR_DIR_OPPOSITE);
+		}
+		else
+		{
+			/* motor b and motor d set 0 angle */
+			run_angle = motor_t->motor_angle;
+			PDEBUG("\rSystem motor B&D rotating %f , Direction: MOTOR_DIR_OPPOSITE!\n", run_angle);
+			control_motor_run(motor_t, &run_angle, MOTOR_DIR_OPPOSITE);
+		}
+	}
+}
+
 /**
   * @function  SunshineControl_Task
   * @brief	   The task of control console by calculater sunrise and sunset.
@@ -510,10 +634,8 @@ void Normal_Mode_Operation(uint32_t second_value, RTC_Type date_time)
 {
 	PDEBUG("\rSystem entry the normal mode !\n");
 	Alta_Azim altazi_value;
-	float32_t motor_angle;
-	xm_of_day_m cur_xm;
-	float32_t run_angle;
 	motor_operation_t *motor_t;
+	uint8_t night_flag = 0;
 	
 	/* check the time is day or night? */
 	if ((second_value > Art_Sunshine_Info.sunrise_set.sunrise_second) && (second_value < Art_Sunshine_Info.sunrise_set.sunset_second))
@@ -528,82 +650,33 @@ void Normal_Mode_Operation(uint32_t second_value, RTC_Type date_time)
 
 		/* Operte A motor to run */
 		motor_t = &motor_opr[POINTER_A_MOTOR];
-		cur_xm = calcul_sun_time_am_pm(Art_Sunshine_Info.sunrise_set, date_time);
-		motor_angle = calcul_angle_mirror_elevation(altazi_value.altangles, SYSTEM_FIXED_REFLEX_ANGLE, cur_xm);
-		if (motor_angle < 0.0f)		
-		{
-			arm_abs_f32(&motor_angle, &run_angle, 1);
-			if ((motor_t->motor_angle >= 0.0f) || (motor_t->motor_angle < 90.0f))
-			{
-				run_angle -= motor_t->motor_angle;
-
-				if(run_angle > 0.0f)	/* oppositver */
-				{
-					PDEBUG("\rSystem motor A rotating %f , Direction: MOTOR_DIR_OPPOSITE!\n", run_angle);
-					control_motor_run(motor_t, &run_angle, MOTOR_DIR_OPPOSITE);
-				}
-				else
-				{
-					PDEBUG("\rSystem motor A rotating %f , Direction: MOTOR_DIR_POSITIVER!\n", run_angle);
-					control_motor_run(motor_t, &run_angle, MOTOR_DIR_POSITIVER);
-				}	
-			}
-			else
-			{
-				PDEBUG("\rSystem Motor A runing error!\n");
-			}
-			
-		}
-		else	/* positive direction */
-		{
-			if ((motor_t->motor_angle >= 90.0f) || (motor_t->motor_angle < 180.0f))
-			{
-				run_angle -= motor_t->motor_angle;
-
-				if(run_angle > 0.0f)	/* oppositver */
-				{
-					PDEBUG("\rSystem motor A rotating %f , Direction: MOTOR_DIR_OPPOSITE!\n", run_angle);
-					control_motor_run(motor_t, &run_angle, MOTOR_DIR_OPPOSITE);
-				}
-				else
-				{
-					PDEBUG("\rSystem motor A rotating %f , Direction: MOTOR_DIR_POSITIVER!\n", run_angle);
-					control_motor_run(motor_t, &run_angle, MOTOR_DIR_POSITIVER);
-				}	
-			}
-			else
-			{
-				PDEBUG("\rSystem Motor A runing error!\n");
-			}
-		}
+		system_altangles_motor_running(motor_t, altazi_value, date_time);
 
 		/* Operte B motor to run */
 		motor_t = &motor_opr[POINTER_B_MOTOR];
-		motor_angle = sync_motor_azimuth_sun(altazi_value.azimuths);
-		run_angle = motor_angle - motor_t->motor_angle;
-		if (run_angle > 0.0f)
-		{
-			PDEBUG("\rSystem motor B rotating %f , Direction: MOTOR_DIR_POSITIVER!\n", run_angle);
-			control_motor_run(motor_t, &run_angle, MOTOR_DIR_POSITIVER);
-		}
-		else
-		{
-			PDEBUG("\rSystem Motor B runing error!\n");
-		}
+		system_azimuths_motor_running(motor_t, altazi_value);
 
 		/* Operte C motor to run */
+		motor_t = &motor_opr[POINTER_C_MOTOR];
+		system_altangles_motor_running(motor_t, altazi_value, date_time);
 
 		/* Operte D motor to run */
+		motor_t = &motor_opr[POINTER_D_MOTOR];
+		system_azimuths_motor_running(motor_t, altazi_value);
 	}
 	else
 	{
-		/* Operate the A motor to definite state */
+		/* Operate the A B C Dmotor to definite state */
+		system_motor_night_work_state();
+		night_flag++;
 
-		/* Operate the B motor to definite state */
-
-		/* Operate the C motor to definite state */
-
-		/* Operate the D motor to definite state */
+		/* set the motor stop, because the motor will immediately stop if set stop for firest times */
+		if (night_flag > 1)
+		{
+			/* update the sysytem state */
+			PDEBUG("\rSystem motor A B C D stop work.\n");
+			system_motor_all_stop();
+		}
 		
 		PDEBUG("\rThe sunrise time: %d : %d\n", Art_Sunshine_Info.sunrise_set.sunrise_time.time_hours,  Art_Sunshine_Info.sunrise_set.sunrise_time.time_minutes);
 		PDEBUG("\rGood night!\n");
@@ -621,15 +694,12 @@ void Exception_Mode_Operation(uint32_t second_value, RTC_Type date_time)
 {
 	PDEBUG("\rSystem entry the exception mode !\n");
 
-	/* display the exception cause */
+	/* display the exception cause  TODO LCD */
 
-	/* Operate the A motor to definite state */
-
-	/* Operate the B motor to definite state */
-
-	/* Operate the C motor to definite state */
-
-	/* Operate the D motor to definite state */
+	/* Operate the A B C D motor to definite state */
+	PDEBUG("\rSystem motor A B C D stop work.\n");
+	system_motor_all_stop();
+	
 }
 
 /**
@@ -643,7 +713,10 @@ void Clear_Mode_Operation(uint32_t second_value, RTC_Type date_time)
 {
 	PDEBUG("\rSystem entry the clear mode !\n");
 
-	
+	/* display the exception cause TODO lcd */
+	/* Operate the A B C D motor to definite state */
+	PDEBUG("\rSystem motor A B C D stop work.\n");
+	system_motor_all_stop();
 }
 
 /**

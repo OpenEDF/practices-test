@@ -741,13 +741,27 @@ void control_motor_run(motor_operation_t *motor_t, float32_t *angle, motor_dirce
 	float32_t pluse_count;
 	uint32_t temp_count;
 	
-	/* calculater the pluse counter */
-	arm_mult_f32(angle, &additi, &pluse_count, 1);
-	temp_count = (uint32_t)pluse_count;
+	/* check the motor state */
+	if (motor_t->motor_work == MOTOR_WORK_OK)
+	{
+		/* calculater the pluse counter */
+		arm_mult_f32(angle, &additi, &pluse_count, 1);
+		temp_count = (uint32_t)pluse_count;
 
-	/* add the pluse value */
-	motor_t->motor_pwm_total_pluse += temp_count;
-	motor_work_by_pluse_count(motor_t, temp_count, dir);	
+		/* add the pluse value */
+
+		if (dir == MOTOR_DIR_POSITIVER)
+		{
+			motor_t->motor_pwm_total_pluse += temp_count;
+			motor_t->motor_angle += *angle;
+		}	
+		else
+		{
+			motor_t->motor_pwm_total_pluse -= temp_count;
+			motor_t->motor_angle -= *angle;
+		}
+		motor_work_by_pluse_count(motor_t, temp_count, dir);	
+	}
 }
 
 /**
