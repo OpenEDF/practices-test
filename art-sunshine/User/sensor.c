@@ -330,7 +330,7 @@ void SunshineReadWind_Task(void *pvParameters)
 		/* clear the sysytem mode. */
 		/* !!! NOTE: When the server sends the data control device into exception mode,
 		   the command must be send again de-control*/ 
-		if ((timer_counter > delay_counts) && (Art_Sunshine_Info.serctl_status == de_control))
+		if ((timer_counter > delay_counts) && (Art_Sunshine_Info.serctl_status == control)) /* before de_control */
 		{
 			Art_Sunshine_Info.mode = NORMAL_MODE;
 			delay_counts = 0;

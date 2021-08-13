@@ -240,6 +240,34 @@ void LCD_DefaultShow(void)
 }
 
 /**
+  * @function   display_system_status
+  * @brief 	    printf the system state.
+  * @param[in]  None.
+  * @retval	    None.
+  */
+void display_system_status(void)
+{
+	PDEBUG("\rDisplay the system state.\n");
+
+	/* LTE state */
+	if (Art_Sunshine_Info.lte_status == online)
+		PDEBUG("\rLTE Status: online.\n");
+	else
+		PDEBUG("\rLTE Status: offline.\n");
+
+	/* Wind speed sendor Device */
+	if (Art_Sunshine_Info.winddevice_status == EXIST)
+		PDEBUG("\rWind Speed Sensor Status: EXIST.\n");
+	else
+		PDEBUG("\rWind Speed Sensor Status: LOST.\n");
+
+	/* Wind speed */
+	PDEBUG("\rCurrent wind speed: %f m/s.\n", Art_Sunshine_Info.windspeed);
+	PDEBUG("\rCurrent wind speed threshold: %d m/s.\n", Art_Sunshine_Info.windspeed_threshold);
+
+	
+}
+/**
   * @function   UserApplication_Task
   * @brief      User opeartion system and moniter.
   * @param[in]  pvParameters: default.
@@ -271,9 +299,11 @@ void UserApplication_Task(void *pvParameters)
 				case EXCEPTION_MODE:	/* Exception mode */
 					if ((second_count % Art_Sunshine_Info.interval_exception) == 0)
 					{
-						PDEBUG("Exception Mode system send the self information to Aliyun.\n");
+						PDEBUG("\rException Mode system send the self information to Aliyun.\n");
 						/* 4G moudle Transmit the system information */
 						LTE_SendMessage();
+						/* display system state */
+						display_system_status();
 					}
 				break;
 				
@@ -281,22 +311,22 @@ void UserApplication_Task(void *pvParameters)
 				case SLEEP_MODE:
 					if ((second_count % Art_Sunshine_Info.interval_normal) == 0)
 					{
-						PDEBUG("Normal Mode system send the self information to Aliyun.\n");
+						PDEBUG("\rNormal Mode system send the self information to Aliyun.\n");
 						/* 4G moudle Transmit the system information */
 						LTE_SendMessage();
+						display_system_status();
 					}
 				break;
 
 				case CLEAR_MODE:
-
 				break;
-				default:
+				default:	/* never be here */
 				break;
 			}
 		}
 		else
 		{
-			PDEBUG("Connecting the LTE Device to the network.\n");
+			PDEBUG("\rConnecting the LTE Device to the network.\n");
 			LTE_ConnetNetwork();	
 		}
 

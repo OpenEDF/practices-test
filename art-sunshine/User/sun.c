@@ -192,12 +192,12 @@ void SunshineControl_Task(void *pvParameters)
 	while(TRUE)
 	{
 		PDEBUG("\rSunshineControl_Task is Runing.\n");
-		/* get the current time */
 
 		/* get the system motor status */
 		motor_state = get_system_motor_check_state();
 		if (motor_state == MOTOR_ALL_WORK_OK)
 		{
+			/* get the current time */
 			curtime = RTC_TimeAndDate_Get();
 			curtime_second = Conv_TimeToSecond(&curtime.rtc_time);
 			/* choose the system mode and control */
@@ -206,22 +206,19 @@ void SunshineControl_Task(void *pvParameters)
 				case NORMAL_MODE:
 					/* Normal mode operation function */
 					Normal_Mode_Operation(curtime_second, curtime);
-					
 				break;
 
 				case EXCEPTION_MODE:
 					/* exception mode operation function */
 					Exception_Mode_Operation(curtime_second, curtime);
-			
 				break;
 
 				case CLEAR_MODE:
 					/* clear and default mode operation function */
 					Clear_Mode_Operation(curtime_second, curtime);
-				
 				break;
 
-				default:
+				default:  /* never be here */
 				break;
 			}
 		}
@@ -669,7 +666,6 @@ void Normal_Mode_Operation(uint32_t second_value, RTC_Type date_time)
 		/* Operate the A B C Dmotor to definite state */
 		system_motor_night_work_state();
 		night_flag++;
-
 		/* set the motor stop, because the motor will immediately stop if set stop for firest times */
 		if (night_flag > 1)
 		{
@@ -677,7 +673,6 @@ void Normal_Mode_Operation(uint32_t second_value, RTC_Type date_time)
 			PDEBUG("\rSystem motor A B C D stop work.\n");
 			system_motor_all_stop();
 		}
-		
 		PDEBUG("\rThe sunrise time: %d : %d\n", Art_Sunshine_Info.sunrise_set.sunrise_time.time_hours,  Art_Sunshine_Info.sunrise_set.sunrise_time.time_minutes);
 		PDEBUG("\rGood night!\n");
 	}
@@ -698,6 +693,8 @@ void Exception_Mode_Operation(uint32_t second_value, RTC_Type date_time)
 
 	/* Operate the A B C D motor to definite state */
 	PDEBUG("\rSystem motor A B C D stop work.\n");
+
+	/* stop the motor running */
 	system_motor_all_stop();
 	
 }

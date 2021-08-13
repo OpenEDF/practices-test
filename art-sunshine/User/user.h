@@ -87,6 +87,7 @@ void CalSUNRiseSet_Time(void);
 void Wait_LTEStartUp(uint8_t sec);
 void UserApplication_Task(void *pvParameters);
 void LCD_DefaultShow(void);
+void display_system_status(void);
 
 #ifdef __cplusplus
 }
