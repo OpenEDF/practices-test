@@ -31,8 +31,19 @@ uint8_t bcd_to_devimal(uint8_t bcd_number)
 {
 	if (bcd_number >= 100)
 		return 0x00;
+
 	/* decimal = unit = tens */
 	return (((bcd_number >> 4) & 0x0F) * 10) + (bcd_number & 0x0F);
+}
+
+/* decimal convert to bcd number */
+uint8_t decimal_to_bcd(uint8_t decimal_number)
+{
+	if (bcd_number >= 100)
+		return 0x00;
+
+	/* BCD number */
+	return ((decimal_number / 10) << 4) + (decimal_number % 10);
 }
 
 int main(void)
