@@ -145,8 +145,11 @@ void InttoString(int value, char *dstptr);
 uint8_t DectoHex(uint8_t *decstr);
 uint16_t Bcd_To_Ascii(uint8_t *srcptr, uint8_t *dstptr, uint8_t count, uint8_t dstlen);
 uint8_t Bcd_To_String(uint8_t *srcptr, uint8_t *dstptr, uint8_t len);
+uint8_t bcd_to_decimal(uint8_t bcd_number);
+uint8_t decimal_to_bcd(uint8_t decimal_number);
 uint16_t calmemsize(uint16_t needsize);
 void gcvt_user(float x, char *buf);
+void print_uart_data(char *desrc, uint8_t *data, uint8_t len);
 
 #ifdef __cplusplus
 }

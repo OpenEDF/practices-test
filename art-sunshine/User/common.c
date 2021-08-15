@@ -294,6 +294,36 @@ uint8_t Bcd_To_String(uint8_t *srcptr, uint8_t *dstptr, uint8_t count)
 }
 
 /**
+  * @function   bcd_to_decimal
+  * @brief      BCD number convert to decimal number.
+  * @param[in]  bcd_number: BCD number.
+  * @retval     None.
+  */ 
+uint8_t bcd_to_decimal(uint8_t bcd_number)
+{
+	if (bcd_number >= 100)
+		return 0x00;
+	/* Decimal number */
+	return ((bcd_number >> 4) & 0x0F) * 10 + (bcd_number& 0x0F);
+}
+
+/**
+  * @function   decimal_to_bcd
+  * @brief      decimal number convert to bcd number.
+  * @param[in]  decimal_number: decimal number.
+  * @retval     None.
+  */ 
+uint8_t decimal_to_bcd(uint8_t decimal_number)
+{
+	if (decimal_number >= 100)
+		return 0x00;
+
+	/* BCD number */
+	return ((decimal_number / 10) << 4) + (decimal_number % 10);
+}
+
+
+/**
  * @fuction   calmemsize
  * @brief     calcuter the memory size for sysytem need..
  * @param[in] needsize: need memory size foe sysytem.
@@ -354,6 +384,25 @@ void gcvt_user(float x, char *buf)
     }
 }
 
+/**
+  * @function   print_uart_data
+  * @brief      print the uart port send and receive data.
+  * @param[in]  desrc: desrciption information.
+  * @param[in]  data: the data will be print.
+  * @param[in]  len: the data length.
+  * @retval     None.
+  */
+void print_uart_data(char *desrc, uint8_t *data, uint8_t len)
+{
+	/* description */
+	PDEBUG("\r%s:", desrc);
+				
+	for (uint8_t index = 0; index <=len; index++)
+	{
+		PDEBUG(" %02X", data[index]);
+	}
+	PDEBUG("\n");
+}
 
 /**
   * @}

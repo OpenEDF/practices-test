@@ -39,7 +39,7 @@
 /* Private typedef -----------------------------------------------------------*/
 
 /* Private define ------------------------------------------------------------*/
-#define LCD_DATA_BUFFER_SIZE 64		/* lcd data send buffer */
+#define LCD_DATA_BUFFER_SIZE 512		/* lcd data send buffer */
 
 /* Private variables ---------------------------------------------------------*/
 SemaphoreHandle_t xLCDBinarySemaphore = NULL;
@@ -68,7 +68,7 @@ FunStatus Send_DataTo_LCD(char *data)
 	/* allocated the memory */
 	if (NULL == (txbuffer = pvPortMalloc(LCD_MAXDATA_SZIE)))
 	{
-		PDEBUG("\rNo more memory to be allocate.\n");
+		PDEBUG("\r[OK] No more memory to be allocate.\n");
 		return R_ERROR;
 	}
 	
@@ -93,7 +93,7 @@ FunStatus Send_DataTo_LCD(char *data)
 	/* Send to queue */
 	if(xQueueSendToBack(xSerialTxQueue, &txbuffer, pdMS_TO_TICKS(100)) != pdPASS)
 	{
-		PDEBUG("\rLCD Queue send message failed.\n");
+		PDEBUG("\r[OK] LCD Queue send message failed.\n");
 		return R_ERROR;
 	}
 	
@@ -118,11 +118,11 @@ void LCD_Init(void)
 	/* check cerated */
 	if (xLCDBinarySemaphore == NULL)
 	{
-		PDEBUG("\rThe lcd xLCDBinarySemaphore is Create Failed.\n");
+		PDEBUG("\r[OK] The lcd xLCDBinarySemaphore is Create Failed.\n");
 	}
 	else
 	{
-		PDEBUG("\rxLCDBinarySemaphore is Created.\n");
+		PDEBUG("\r[OK] xLCDBinarySemaphore is Created.\n");
 	}
 
 	/* send the command set device */
@@ -132,7 +132,6 @@ void LCD_Init(void)
 	//lcd_uart_tx_str("SBC(0);");		/* under color */
 	/* show the 'Loading...' */
 	lcd_uart_tx_str("CLR(0);DIR(1);BL(0);SBC(0);DCV32(120,80,'Loading...',2)");
-
 	/*
 		+++++++++++++++++++++++++++
 	    +                	      +
@@ -162,16 +161,19 @@ static FunStatus Check_Result(void)
 	loop_times = 3;
 	while (loop_times--)
 	{
-		if (xSemaphoreTake(xLCDBinarySemaphore, pdMS_TO_TICKS(100)) != pdPASS)
+		if (xSemaphoreTake(xLCDBinarySemaphore, pdMS_TO_TICKS(10)) != pdPASS)
 		{
-			PDEBUG("\rLCD Receiver message failed.\n");
+			PDEBUG("\r[OK] LCD Receiver message failed.\n");
 			continue;
 		}
 		else
 		{
 			/* check the result from receiver buffer */
-			if (NULL != strstr((const char *)uartPtr->rxbuffer, "OK")) 
+			if (NULL != strstr((const char *)uartPtr->rxbuffer, "OK"))
+			{
 				ret = R_OK;
+				break;
+			}
 		}
 	}
 	
@@ -199,6 +201,9 @@ void lcd_uart_tx_str(char *str)
 	strcat(temp, "\r\n");
 	/* send data */
 	USARTx_Send_String(USART2, temp);
+
+	/* Drbug */
+	PDEBUG("\r[OK] LCD Display: %s.\n", str);
 }
 
 /**
