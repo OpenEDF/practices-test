@@ -56,7 +56,7 @@ tmux send-keys "$root_passwd" C-m
 
 # 7. return the pane 1 and run debug
 tmux selectp -t 1
-tmux send-keys "riscv64-unknown-elf-gdb $gdbinit_file" C-m
+tmux send-keys "riscv64-unknown-elf-gdb -x $gdbinit_file" C-m
 
 # 8. don't close the session when finsh the setup 
 tmux attach-session -t $session
