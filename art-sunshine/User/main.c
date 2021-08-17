@@ -86,13 +86,13 @@ int main(void)
 {
 	/* system init */
 	System_Init();
-	Wait_LTEStartUp(LTE_WAIT_SECOND);
+	//Wait_LTEStartUp(LTE_WAIT_SECOND);
 
 	/* Config and Enable the Watchdog */
 	IWDG_Config(IWDG_TIMEOUT_1S);
 
 	/* wait the motor A B C D find the 0 */
-	PDEBUG("\rThe motor A B C D run the 0 location.\n");
+	PDEBUG("\r[OK] The motor A B C D run the 0 location.\n");
 	system_motor_self_checking();
 
 	/* create the system start task */

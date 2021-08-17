@@ -35,13 +35,7 @@
 #include "sun.h"
 #include "lte.h"
 #include "console.h"
-#include "led.h"
-#include "uart.h"
-#include "timer.h"
 #include "sensor.h"
-#include "key.h"
-#include "pvd.h"
-#include "lcd.h"
 
 /** @addtogroup User_Driver
   * @{
@@ -85,8 +79,13 @@ void System_Init(void);
 void Calibration_Time(void);
 void CalSUNRiseSet_Time(void);
 void Wait_LTEStartUp(uint8_t sec);
-void UserApplication_Task(void *pvParameters);
 void LCD_DefaultShow(void);
+void display_system_status(void);
+void lcd_update_time(void);
+void lcd_update_sunset_rise(void);
+void UserApplication_Task(void *pvParameters);
+
+
 
 #ifdef __cplusplus
 }

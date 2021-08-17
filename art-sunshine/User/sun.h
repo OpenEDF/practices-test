@@ -82,6 +82,16 @@ typedef struct{
 	int Minute;
 }DateTime;
 
+/* 
+ * enum: @ day of AM and PM. 
+ */
+typedef enum { 
+	AM_OF_DAY = 0x00, 	/* PM */
+	PM_OF_DAY,
+	NIGHT_OF_DAY,
+}xm_of_day_m;
+
+
 /* Exported constants --------------------------------------------------------*/
 
 /* Exported macro ------------------------------------------------------------*/
@@ -119,6 +129,9 @@ typedef struct{
 #define acosd(x)    (RADEG*acos(x))
 #define atan2d(y,x) (RADEG*atan2(y,x))
 
+/* system fixed reflex angle */
+#define SYSTEM_FIXED_REFLEX_ANGLE 30.0f
+
 /* Exported functions --------------------------------------------------------*/
 void SunshineControl_Task(void *pvParameters);
 static int __sunriset__( int year, int month, int day, float lon, float lat,
@@ -136,6 +149,9 @@ Suntime_Type ClaculSun_RiseSet(RTC_Type data_time, Lati_Longi latlong);
 void Normal_Mode_Operation(uint32_t second_value, RTC_Type date_time);
 void Exception_Mode_Operation(uint32_t second_value, RTC_Type date_time);
 void Clear_Mode_Operation(uint32_t second_value, RTC_Type date_time);	
+float32_t calcul_angle_mirror_elevation(float32_t sun_elevation_angle, float32_t fixed_reflex_angle, xm_of_day_m xm);
+float32_t sync_motor_azimuth_sun(float32_t sun_azimuth_angle);
+xm_of_day_m calcul_sun_time_am_pm(Suntime_Type rise_set_time, RTC_Type cur_time);
 
 #ifdef __cplusplus
 }

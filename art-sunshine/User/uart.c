@@ -253,7 +253,7 @@ static void USARTx_Config(USART_Port port, uint32_t baudrate, uint16_t parity)
 		NVIC_Init(&NVIC_InitStructure);
 
 		/* Enbale USART */
-		USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+		USART_ITConfig(USART2, USART_IT_RXNE, DISABLE);
 		USART_ITConfig(USART2, USART_IT_TXE, DISABLE);
 		USART_Cmd(USART2, ENABLE);
 		break;
@@ -297,7 +297,6 @@ void System_USART_Init(void)
 		USART_PORTDATA[index].rxbuf_count = 0;
 		USART_PORTDATA[index].rxtimeout = 0;
 	}
-	
 }
 
 /**
@@ -424,17 +423,13 @@ void USARTx_IRQHandler(USART_Port port, USART_TypeDef* USARTx, uint16_t timeout)
 	{
 		COMMUN_LED_ON();
 		/* directy receiver data */
-		if (portstr->rxbuffer != NULL)
+		tempch = USART_ReceiveData(USARTx);
+		if (portstr->rxbuf_count < (RECEIVER_BUFFER_SIZE - 5))
 		{
-			tempch = USART_ReceiveData(USARTx);
-			if (portstr->rxbuf_count < (RECEIVER_BUFFER_SIZE - 5))
-			{
-				portstr->rxbuffer[portstr->rxbuf_count++] = tempch;
-				portstr->rxtimeout = timeout;
-			}
+			portstr->rxbuffer[portstr->rxbuf_count++] = tempch;
+			portstr->rxtimeout = timeout;
 		}
 	}
-
 	/* Send the data */
 	if (USART_GetITStatus(USARTx, USART_IT_TXE) != RESET)
 	{
@@ -531,6 +526,7 @@ void USARTSend_Task(void *pvParameters)
 	PORT_BUF_FORMAT *portBuffer;
 	USART_BUFStruct *portStr;
 	uint16_t memsize;
+	PDEBUG("\r[OK] USARTSend_Task is created.\n");
 
 	/* loop */
 	while (TRUE)

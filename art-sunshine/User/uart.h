@@ -104,8 +104,8 @@ typedef struct {
  */
 #define DEBUGUSART_TIMEOUT	50		/* Debug uart receiver timeout */
 #define LETUSART_TIMEOUT	500		/* LTE uart receiver timeout */
-#define RS485USART_TIMEOUT	50		/* RS485 uart receiver timeout */
-#define LCDUSART_TIMEOUT	50		/* lcd receiver timeout */
+#define RS485USART_TIMEOUT	100		/* RS485 uart receiver timeout */
+#define LCDUSART_TIMEOUT	100		/* lcd receiver timeout */
 
 /* Exported constants --------------------------------------------------------*/
 /* UART Port data struct */	

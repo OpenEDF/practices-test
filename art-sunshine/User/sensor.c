@@ -129,7 +129,7 @@ PORT_BUF_FORMAT *SensorTxRx_Proc(uint8_t *cmd_frame, uint16_t cmd_size)
 	/* Check the mutex is available? */
 	if (xSemaphoreTake(xSerial485Mutex, pdMS_TO_TICKS(100)) == pdFAIL)
 	{
-		PDEBUG("\rThe Mutex xSerial485Mutex is not be obtained.\n");
+		PDEBUG("\r[ERROR] The Mutex xSerial485Mutex is not be obtained.\n");
 		return NULL;
 	}
 	
@@ -137,17 +137,20 @@ PORT_BUF_FORMAT *SensorTxRx_Proc(uint8_t *cmd_frame, uint16_t cmd_size)
 	memsize = calmemsize(cmd_size);
 	if (NULL == (txcmdbuffer = pvPortMalloc(memsize)))
 	{
-		PDEBUG("\rNo more memory to be allocate.\n");
+		PDEBUG("\r[ERROR] No more memory to be allocate.\n");
 		return NULL;
 	}
 	txcmdbuffer->port = USART_485;
 	txcmdbuffer->length = cmd_size;
 	memcpy(txcmdbuffer->buffer, cmd_frame, cmd_size);
-	
+
+	/* debug */
+	print_uart_data("[INFO] UART 485 Port Send data::", txcmdbuffer->buffer, txcmdbuffer->length);
+
 	/* send the command to deviced by 485 interface */
 	if(xQueueSendToBack(xSerialTxQueue, &txcmdbuffer, pdMS_TO_TICKS(100)) != pdPASS)
 	{
-		PDEBUG("\rUART_485 Queue SEND message failed.\n");
+		PDEBUG("\r[ERROR] UART_485 Queue SEND message failed.\n");
 		return NULL;
 	}
 
@@ -157,7 +160,7 @@ PORT_BUF_FORMAT *SensorTxRx_Proc(uint8_t *cmd_frame, uint16_t cmd_size)
 	{
 		if (xSemaphoreTake(wind_device.xSensoeBinarySemaphore, pdMS_TO_TICKS(100)) != pdPASS)
 		{
-			PDEBUG("\rUART_485 Queue RECEIVER message failed.\n");
+			PDEBUG("\r[ERROR] UART_485 Queue RECEIVER message failed.\n");
 			continue;
 		}
 		else
@@ -170,7 +173,9 @@ PORT_BUF_FORMAT *SensorTxRx_Proc(uint8_t *cmd_frame, uint16_t cmd_size)
 				rxackbuffer->port = USART_485;
 				rxackbuffer->length = uartPtr->rxbuf_count;
 				memcpy(rxackbuffer->buffer, uartPtr->rxbuffer, rxackbuffer->length);
-
+				
+				/* debug */
+				print_uart_data("[INFO] UART 485 Port Receiver data:", rxackbuffer->buffer, rxackbuffer->length);
 				/* clear and initalizes the uart[485] buffer */
 				memset(uartPtr->rxbuffer, 0x00, uartPtr->rxbuf_count);
 				uartPtr->rxbuf_count = 0;
@@ -183,7 +188,7 @@ PORT_BUF_FORMAT *SensorTxRx_Proc(uint8_t *cmd_frame, uint16_t cmd_size)
 				vPortFree(rxackbuffer);
 				xSemaphoreGive(xSerial485Mutex);
 				xSemaphoreGive(wind_device.xSensoeBinarySemaphore);
-				PDEBUG("\rUART_485 RECEIVER message is unpack ERROR.\n");
+				PDEBUG("\r[ERROR] UART_485 RECEIVER message is unpack ERROR.\n");
 				return NULL;
 			}
 			else
@@ -249,22 +254,22 @@ void Sensor_Init(void)
 	/* check cerated */
 	if (wind_device.xSensorUARTRxQueue == NULL )
 	{
-		PDEBUG("\rThe Seneor Queue xUART485RxQueue is Create Failed.\n");
+		PDEBUG("\r[ERROR] The Seneor Queue xUART485RxQueue is Create Failed.\n");
 	}
 	else
 	{
-		PDEBUG("\rwind_device.xSensorUARTRxQueue is Created.\n");
+		PDEBUG("\r[OK] wind_device.xSensorUARTRxQueue is Created.\n");
 	}
 
 	wind_device.xSensoeBinarySemaphore = xSemaphoreCreateBinary();
 	/* check cerated */
 	if (wind_device.xSensoeBinarySemaphore == NULL )
 	{
-		PDEBUG("\rThe Seneor xSensoeBinarySemaphore is Create Failed.\n");
+		PDEBUG("\r[ERROR] The Seneor xSensoeBinarySemaphore is Create Failed.\n");
 	}
 	else
 	{
-		PDEBUG("\rwind_device.xSensoeBinarySemaphore is Created.\n");
+		PDEBUG("\r[OK] wind_device.xSensoeBinarySemaphore is Created.\n");
 	}
 
 	
@@ -281,12 +286,12 @@ void SunshineReadWind_Task(void *pvParameters)
 	PORT_BUF_FORMAT *read_windspeed_buf;
 	uint16_t temp;
 	static uint32_t delay_counts;
-	
-	vTaskDelay(pdMS_TO_TICKS(2000));
+	/* wait the wind sensor ready */
+	vTaskDelay(pdMS_TO_TICKS(1000));
 	
 	while(TRUE)
 	{
-		PDEBUG("\rEnter SunshineReadWind_Task Task.\n");
+		PDEBUG("\r[OK] Enter SunshineReadWind_Task Task.\n");
 		
 		/* Read the wind speed value. */
 		read_windspeed_buf = SensorTxRx_Proc(read_command, COMMAND_SIZE);
@@ -299,7 +304,7 @@ void SunshineReadWind_Task(void *pvParameters)
 			Art_Sunshine_Info.windspeed = (float32_t)temp / 10.0F;
 		
 			Art_Sunshine_Info.wind_level = windspeed_to_beaufort(Art_Sunshine_Info.windspeed);
-			PDEBUG("\rThe Current wind speed value: %f m/s\tBeaufort: %d.\n", \
+			PDEBUG("\r[OK] The Current wind speed value: %f m/s\tBeaufort: %d.\n", \
 				Art_Sunshine_Info.windspeed, \
 				Art_Sunshine_Info.wind_level);
 
@@ -307,19 +312,21 @@ void SunshineReadWind_Task(void *pvParameters)
 			display_str_buffer[25] = (temp / 10) + 0x30;
 			display_str_buffer[27] = (temp % 10) + 0x30;
 
-			Send_DataTo_LCD(display_str_buffer);
+			lcd_uart_tx_str(display_str_buffer);
 			/* free memory */
 			vPortFree(read_windspeed_buf);
 		}
 		else
 		{
-			PDEBUG("\rRead the wind speed Failed.\n");
+			PDEBUG("\r[ERROR] Read the wind speed Failed.\n");
 			Art_Sunshine_Info.winddevice_status = LOST;
 		}
 		
 		/* check the windspeed is greather than threshold value. */
 		if(Art_Sunshine_Info.windspeed >= windspeed_level[Art_Sunshine_Info.windspeed_threshold])
 		{
+			PDEBUG("\r[OK] Current wind speed: %f m/s, wind speed threshold: %f m/s.\n", Art_Sunshine_Info.windspeed, windspeed_level[Art_Sunshine_Info.windspeed_threshold]);
+			PDEBUG("\r[OK] Current wind speed exceeds the threshold and system enters exception mode.\n");
 			/* update the sysytem mode. */
 			Art_Sunshine_Info.mode = EXCEPTION_MODE;
 			
@@ -330,8 +337,9 @@ void SunshineReadWind_Task(void *pvParameters)
 		/* clear the sysytem mode. */
 		/* !!! NOTE: When the server sends the data control device into exception mode,
 		   the command must be send again de-control*/ 
-		if ((timer_counter > delay_counts) && (Art_Sunshine_Info.serctl_status == de_control))
+		if ((timer_counter > delay_counts) && (Art_Sunshine_Info.serctl_status == control)) /* before de_control */
 		{
+			PDEBUG("\r[OK] Current wind speed can guarantee the system working.\n");
 			Art_Sunshine_Info.mode = NORMAL_MODE;
 			delay_counts = 0;
 		}

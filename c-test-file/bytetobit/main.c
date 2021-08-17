@@ -26,10 +26,37 @@ uint8_t bitstobyte(uint8_t *data)
     printf("\rtemp = 0x%02X.\n", temp);
 }
 
+/* bcd convert to decimal number */
+uint8_t bcd_to_devimal(uint8_t bcd_number)
+{
+	if (bcd_number >= 100)
+		return 0x00;
+
+	/* decimal = unit = tens */
+	return (((bcd_number >> 4) & 0x0F) * 10) + (bcd_number & 0x0F);
+}
+
+/* decimal convert to bcd number */
+uint8_t decimal_to_bcd(uint8_t decimal_number)
+{
+	if (bcd_number >= 100)
+		return 0x00;
+
+	/* BCD number */
+	return ((decimal_number / 10) << 4) + (decimal_number % 10);
+}
+
 int main(void)
 {
+	uint8_t bcd_test = 0x10;
+	uint8_t decimal;
+
     bytetobits(test_byte);
     bitstobyte(array_bits);
+
+	decimal = bcd_to_devimal(bcd_test);
+
+	printf("BCD Number: 0x%02X = DECIMAL Number: %d.\n",bcd_test, decimal);
     return 0;
 }
 
