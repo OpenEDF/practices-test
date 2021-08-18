@@ -16,3 +16,5 @@ alias cd7..='cd ../../../../../../'
 
 # git psuh hawk
 alias push_hawk='git push origin HEAD:refs/for/hawk_v3_dev'
+alias clone_hawk='echo ssh://yang.zhixiong@192.168.100.51:29419/hawk_open_core.git'
+HAWK_REP='ssh://yang.zhixiong@192.168.100.51:29419/hawk_open_core.git'
