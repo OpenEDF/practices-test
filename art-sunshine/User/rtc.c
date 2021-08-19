@@ -266,7 +266,7 @@ void System_RTC_Init(void)
 	initdate.rtc_time.time_seconds = 0x00;
 	RTC_TimeAndDate_Set(&initdate);
 
-	PDEBUG("\rSet the Init time is: %d/%02d/%02d %02d:%02d:%02d\n", initdate.rtc_date.date_year, initdate.rtc_date.date_month, \
+	PDEBUG("\r[OK] Set the Init time is: %d/%02d/%02d %02d:%02d:%02d\n", initdate.rtc_date.date_year, initdate.rtc_date.date_month, \
 		initdate.rtc_date.date_day, initdate.rtc_time.time_hours, initdate.rtc_time.time_minutes, \
 		initdate.rtc_time.time_seconds);
 

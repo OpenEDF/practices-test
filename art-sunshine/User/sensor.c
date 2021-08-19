@@ -40,14 +40,14 @@
 /* Private define ------------------------------------------------------------*/
 
 /* Private macro -------------------------------------------------------------*/
-
+#define LCD_BUFFER_SIZE 128		/* set the lcd buffer size */
 /* Private variables ---------------------------------------------------------*/
 Sensor_Str wind_device;		/* global variable */
 
 /*command for read wind speed value */	
 uint8_t read_command[COMMAND_SIZE] = {0x01, 0x03, 0x00, 0x00, 0x00, 0x01, 0x84, 0x0A};
 float32_t windspeed_level[Hurricane] = {0.5F, 1.5F, 3.3F, 5.5F, 7.9F, 10.7F, 13.8F, 17.1F, 20.7F, 24.4F, 28.4F,32.6F};
-char display_str_buffer[64] = "DCV24(70,90,'Wind Speed: 8.8 m/s',2);";
+char display_str_buffer[LCD_BUFFER_SIZE] = "SBC(0);DCV24(70,90,'Wind Speed: 8.8 m/s',2);";
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -309,8 +309,10 @@ void SunshineReadWind_Task(void *pvParameters)
 				Art_Sunshine_Info.wind_level);
 
 			/* show to the lcd */
-			display_str_buffer[25] = (temp / 10) + 0x30;
-			display_str_buffer[27] = (temp % 10) + 0x30;
+			//display_str_buffer[25+7] = (temp / 10) + 0x30;
+			//display_str_buffer[27+7] = (temp % 10) + 0x30;
+			display_str_buffer[32] = (temp / 10) + 0x30;
+			display_str_buffer[34] = (temp % 10) + 0x30;
 
 			lcd_uart_tx_str(display_str_buffer);
 			/* free memory */

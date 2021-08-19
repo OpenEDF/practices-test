@@ -46,10 +46,11 @@
 /* Private define ------------------------------------------------------------*/
 
 /* Private macro -------------------------------------------------------------*/
+#define LCD_BUFFER_SIZE			128			/* Lcd buffer size */
 
 /* Private variables ---------------------------------------------------------*/
 SYSTEM_INFORMATION Art_Sunshine_Info;
-static char lcd_default_context[] = "CLR(0);DCV32(90,5,'System State',5);PL(0,40,376,40,4);\
+static char *lcd_default_context = "CLR(0);DCV32(90,5,'System State',5);PL(0,40,376,40,4);\
 DCV24(15,60,'Sunrise: 06:13  Sunset: 18:23',2);DCV24(70,90,'Wind Speed: 8.8 m/s',2);\
 DCV24(15,120,'LTE Operation status: ',2);CIRF(300,132,8,1);PL(0,179,376,179,4);\
 DCV24(20,184,'Map: 31.239692бу 121.499755бу',5);DCV24(54,213,'2021/08/14 13:00:00',5);";
@@ -278,38 +279,38 @@ void display_system_status(void)
   */
 void lcd_update_time(void)
 {
-	char str_timeupdate[64] = "DCV24(54,213,'2020/10/17 18:25:00',5);";
+	char str_timeupdate[LCD_BUFFER_SIZE] = "SBC(0);DCV24(54,213,'2021/08/19 18:00:00',5);";
 	RTC_Type current_time;
 	uint16_t temp;
 	
 	current_time = RTC_TimeAndDate_Get();
 	/* year */
-	str_timeupdate[14] = (current_time.rtc_date.date_year / 1000) + 0x30;
+	str_timeupdate[14+7] = (current_time.rtc_date.date_year / 1000) + 0x30;
 	temp = current_time.rtc_date.date_year % 1000;
-	str_timeupdate[15] = (temp / 100) + 0x30;
+	str_timeupdate[15+7] = (temp / 100) + 0x30;
 	temp = temp % 100;
-	str_timeupdate[16] = (temp / 10) + 0x30;
-	str_timeupdate[17] = (temp % 10) + 0x30;
+	str_timeupdate[16+7] = (temp / 10) + 0x30;
+	str_timeupdate[17+7] = (temp % 10) + 0x30;
 
 	/* month */
-	str_timeupdate[19] = (current_time.rtc_date.date_month / 10) + 0x30;
-	str_timeupdate[20] = (current_time.rtc_date.date_month % 10) + 0x30;
+	str_timeupdate[19+7] = (current_time.rtc_date.date_month / 10) + 0x30;
+	str_timeupdate[20+7] = (current_time.rtc_date.date_month % 10) + 0x30;
 
 	/* day */
-	str_timeupdate[22] = (current_time.rtc_date.date_day / 10) + 0x30;
-	str_timeupdate[23] = (current_time.rtc_date.date_day % 10) + 0x30;
+	str_timeupdate[22+7] = (current_time.rtc_date.date_day / 10) + 0x30;
+	str_timeupdate[23+7] = (current_time.rtc_date.date_day % 10) + 0x30;
 
 	/* hour */
-	str_timeupdate[25] = (current_time.rtc_time.time_hours / 10) + 0x30;
-	str_timeupdate[26] = (current_time.rtc_time.time_hours % 10) + 0x30;
+	str_timeupdate[25+7] = (current_time.rtc_time.time_hours / 10) + 0x30;
+	str_timeupdate[26+7] = (current_time.rtc_time.time_hours % 10) + 0x30;
 
 	/* minutes */
-	str_timeupdate[28] = (current_time.rtc_time.time_minutes / 10) + 0x30;
-	str_timeupdate[29] = (current_time.rtc_time.time_minutes % 10) + 0x30;
+	str_timeupdate[28+7] = (current_time.rtc_time.time_minutes / 10) + 0x30;
+	str_timeupdate[29+7] = (current_time.rtc_time.time_minutes % 10) + 0x30;
 			
 	/* second */
-	str_timeupdate[31] = (current_time.rtc_time.time_seconds / 10) + 0x30;
-	str_timeupdate[32] = (current_time.rtc_time.time_seconds % 10) + 0x30;
+	str_timeupdate[31+7] = (current_time.rtc_time.time_seconds / 10) + 0x30;
+	str_timeupdate[32+7] = (current_time.rtc_time.time_seconds % 10) + 0x30;
 
 	/* show to the lcd */
 	lcd_uart_tx_str(str_timeupdate);
@@ -323,20 +324,20 @@ void lcd_update_time(void)
   */
 void lcd_update_sunset_rise(void)
 {
-	char str_sunset_rise[64] = "DCV24(15,60,'Sunrise: 06:13  Sunset: 18:23',2);";
+	char str_sunset_rise[LCD_BUFFER_SIZE] = "SBC(0);DCV24(15,60,'Sunrise: 06:13  Sunset: 18:23',2);";
 
 	/* show to the lcd */
-	str_sunset_rise[22] = (Art_Sunshine_Info.sunrise_set.sunrise_time.time_hours / 10) + 0x30;
-	str_sunset_rise[23] = (Art_Sunshine_Info.sunrise_set.sunrise_time.time_hours % 10) + 0x30;
+	str_sunset_rise[22+7] = (Art_Sunshine_Info.sunrise_set.sunrise_time.time_hours / 10) + 0x30;
+	str_sunset_rise[23+7] = (Art_Sunshine_Info.sunrise_set.sunrise_time.time_hours % 10) + 0x30;
 
-	str_sunset_rise[25] = (Art_Sunshine_Info.sunrise_set.sunrise_time.time_minutes / 10) + 0x30;
-	str_sunset_rise[26] = (Art_Sunshine_Info.sunrise_set.sunrise_time.time_minutes % 10) + 0x30;
+	str_sunset_rise[25+7] = (Art_Sunshine_Info.sunrise_set.sunrise_time.time_minutes / 10) + 0x30;
+	str_sunset_rise[26+7] = (Art_Sunshine_Info.sunrise_set.sunrise_time.time_minutes % 10) + 0x30;
 	
-	str_sunset_rise[37] = (Art_Sunshine_Info.sunrise_set.sunset_time.time_hours / 10) + 0x30;
-	str_sunset_rise[38] = (Art_Sunshine_Info.sunrise_set.sunset_time.time_hours % 10) + 0x30;
+	str_sunset_rise[37+7] = (Art_Sunshine_Info.sunrise_set.sunset_time.time_hours / 10) + 0x30;
+	str_sunset_rise[38+7] = (Art_Sunshine_Info.sunrise_set.sunset_time.time_hours % 10) + 0x30;
 
-	str_sunset_rise[40] = (Art_Sunshine_Info.sunrise_set.sunset_time.time_minutes / 10) + 0x30;
-	str_sunset_rise[41] = (Art_Sunshine_Info.sunrise_set.sunset_time.time_minutes % 10) + 0x30;
+	str_sunset_rise[40+7] = (Art_Sunshine_Info.sunrise_set.sunset_time.time_minutes / 10) + 0x30;
+	str_sunset_rise[41+7] = (Art_Sunshine_Info.sunrise_set.sunset_time.time_minutes % 10) + 0x30;
 			
 	/* display the lcd */
 	lcd_uart_tx_str(str_sunset_rise);	

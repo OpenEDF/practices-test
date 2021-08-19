@@ -39,7 +39,7 @@
 /* Private typedef -----------------------------------------------------------*/
 
 /* Private define ------------------------------------------------------------*/
-#define LCD_DATA_BUFFER_SIZE 512		/* lcd data send buffer */
+#define LCD_DATA_BUFFER_SIZE 512  /* lcd data send buffer, must set more that 336 */
 
 /* Private variables ---------------------------------------------------------*/
 SemaphoreHandle_t xLCDBinarySemaphore = NULL;

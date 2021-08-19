@@ -91,7 +91,7 @@ typedef struct {
 	SemaphoreHandle_t xSensoeBinarySemaphore; 	/* Sensor Binary Semaphore */
 }Sensor_Str;
 
-#define UART485_QUEUE_DEPTH	  1		/* queue depth */
+#define UART485_QUEUE_DEPTH	  1					/* queue depth */
 #define CLEAR_FLAG_TIME		  (10 * 60 * 1000)	/* EXECPTION MODE flag clear delay  */
 #define SENSOR_SAMP_FRE		  (5 * 1000)		/* sensor sample intervale time */
 

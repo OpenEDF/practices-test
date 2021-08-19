@@ -47,7 +47,7 @@
 extern SemaphoreHandle_t xLCDBinarySemaphore;	
 
 /* Exported define -----------------------------------------------------------*/
-#define LCD_MAXDATA_SZIE 64
+#define LCD_MAXDATA_SZIE 128
 
 /* Exported functions --------------------------------------------------------*/
 FunStatus Send_DataTo_LCD(char *data);
