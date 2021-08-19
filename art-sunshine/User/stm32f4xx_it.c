@@ -335,9 +335,10 @@ void RTC_Alarm_IRQHandler(void)
 	if (RTC_GetITStatus(RTC_IT_ALRA) != RESET)
 	{
 		RTC_ClearITPendingBit(RTC_IT_ALRA);
-		PDEBUG("\rAlarm Interrupt Runing.\n");
-		/* upgrade the alalrm flag */
-		Alarm_Flag = 0xFF;															
+		PDEBUG("\r[OK] Alarm Interrupt Runing, Calculater the time for sunrise and sunset.\n");
+
+		/* calculater the sunrise and sunset time */
+		CalSUNRiseSet_Time();														
 	}
 	EXTI_ClearITPendingBit(EXTI_Line17);
 }
@@ -356,8 +357,9 @@ void RTC_WKUP_IRQHandler(void)
 		RTC_ClearITPendingBit(RTC_IT_WUT);
 		Art_Sunshine_Info.syswork_time++;
 		second_count++;
-		/* update the flag */
-		Second_Flag = 0xFF;
+		
+		/* upate and show */
+		lcd_update_time();
 	}
 	EXTI_ClearITPendingBit(EXTI_Line22);
 }
@@ -373,7 +375,7 @@ void EXTI0_IRQHandler(void)
 	/* check the interrupt */
 	if(EXTI_GetITStatus(EXTI_Line0) != RESET) 
 	{
-		PDEBUG("\rSystem Key EXTI0_IRQHandler runing...\n");
+		PDEBUG("\r[OK] System Key EXTI0_IRQHandler runing...\n");
 		/* Clear the TI */
 		EXTI_ClearITPendingBit(EXTI_Line0); 
 	}
@@ -393,7 +395,7 @@ void EXTI9_5_IRQHandler(void)
 	motor = &motor_opr[POINTER_A_MOTOR];
 	if(EXTI_GetITStatus(EXTI_Line5) != RESET) 
 	{
-		PDEBUG("\rSystem Motor A EXTI5_IRQHandler runing...\n");
+		PDEBUG("\r[OK] System Motor A EXTI5_IRQHandler runing...\n");
 		/* stop and clear */
 		motor->motor_pluse_count = 0;
 		motor_control_stop(motor);
@@ -409,7 +411,7 @@ void EXTI9_5_IRQHandler(void)
 	motor = &motor_opr[POINTER_B_MOTOR];
 	if(EXTI_GetITStatus(EXTI_Line6) != RESET) 
 	{
-		PDEBUG("\rSystem Motor B EXTI6_IRQHandler runing...\n");
+		PDEBUG("\r[OK] System Motor B EXTI6_IRQHandler runing...\n");
 		
 		motor->motor_pluse_count = 0;
 		motor_control_stop(motor);
@@ -425,7 +427,7 @@ void EXTI9_5_IRQHandler(void)
 	motor = &motor_opr[POINTER_C_MOTOR];
 	if(EXTI_GetITStatus(EXTI_Line7) != RESET) 
 	{
-		PDEBUG("\rSystem Motor C EXTI7_IRQHandler runing...\n");
+		PDEBUG("\r[OK] System Motor C EXTI7_IRQHandler runing...\n");
 		
 		motor->motor_pluse_count = 0;
 		motor_control_stop(motor);
@@ -441,7 +443,7 @@ void EXTI9_5_IRQHandler(void)
 	motor = &motor_opr[POINTER_D_MOTOR];
 	if(EXTI_GetITStatus(EXTI_Line8) != RESET) 
 	{
-		PDEBUG("\rSystem Motor D EXTI8_IRQHandler runing...\n");
+		PDEBUG("\r[OK] System Motor D EXTI8_IRQHandler runing...\n");
 
 		motor->motor_pluse_count = 0;
 		motor_control_stop(motor);
@@ -467,11 +469,11 @@ void PVD_IRQHandler(void)
 	/* check the PVDO */
 	if (PWR_GetFlagStatus(PWR_FLAG_PVDO) != RESET)
 	{
-		PDEBUG("\rSystem Enter the PVD interrupt Handler.\n");
-		PDEBUG("\rSystem will save parameters to flash and shutdown.\n");
+		PDEBUG("\r[OK] System Enter the PVD interrupt Handler.\n");
+		PDEBUG("\r[OK] System will save parameters to flash and shutdown.\n");
 		/* save the parameters */
 		Flash_LoadWorkParam();
-		PDEBUG("\rgoodbye dear friend.\n");
+		PDEBUG("\r[OK] goodbye dear friend.\n");
 	}
 }
 

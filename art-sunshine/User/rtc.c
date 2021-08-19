@@ -23,6 +23,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "rtc.h"
+#include "common.h"
+
 /** @addtogroup RTC_Driver
   * @{
   */
@@ -40,13 +42,11 @@
 
 /* Private variables ---------------------------------------------------------*/
 uint32_t second_count;				/* sencond */
-uint8_t Alarm_Flag = 0x00;			/* Alarm A */
-uint8_t Second_Flag = 0x00;			/* Second interrupt flag */
 
 /* Private function prototypes -----------------------------------------------*/
 
 /* Private functions ---------------------------------------------------------*/
-  
+
 /** @defgroup RTC_Private_Functions
   * @{
   */
@@ -104,17 +104,17 @@ ErrorStatus RTC_TimeAndDate_Set(RTC_Type *date_time)
 	ErrorStatus status = ERROR;
 
 	/* set date */
-	RTC_DateStructure.RTC_Year = date_time->rtc_date.date_year - 2000;
-	RTC_DateStructure.RTC_Month = date_time->rtc_date.date_month;
-	RTC_DateStructure.RTC_Date = date_time->rtc_date.date_day;
-	RTC_DateStructure.RTC_WeekDay = date_time->rtc_date.date_weekday;
+	RTC_DateStructure.RTC_Year = decimal_to_bcd(date_time->rtc_date.date_year);
+	RTC_DateStructure.RTC_Month = decimal_to_bcd(date_time->rtc_date.date_month);
+	RTC_DateStructure.RTC_Date = decimal_to_bcd(date_time->rtc_date.date_day);
+	RTC_DateStructure.RTC_WeekDay = decimal_to_bcd(date_time->rtc_date.date_weekday);
 	status = RTC_SetDate(RTC_Format_BCD, &RTC_DateStructure);
 		
 	/* set time */
 	//RTC_TimeStructure.RTC_H12 = RTC_H12_AM;
-	RTC_TimeStructure.RTC_Hours = date_time->rtc_time.time_hours; 
-	RTC_TimeStructure.RTC_Minutes = date_time->rtc_time.time_minutes;
-	RTC_TimeStructure.RTC_Seconds = date_time->rtc_time.time_seconds;
+	RTC_TimeStructure.RTC_Hours = decimal_to_bcd(date_time->rtc_time.time_hours); 
+	RTC_TimeStructure.RTC_Minutes = decimal_to_bcd(date_time->rtc_time.time_minutes);
+	RTC_TimeStructure.RTC_Seconds = decimal_to_bcd(date_time->rtc_time.time_seconds);
 	status = RTC_SetTime(RTC_Format_BCD, &RTC_TimeStructure);
 
 	/* return Error Value */
@@ -137,16 +137,16 @@ RTC_Type RTC_TimeAndDate_Get(void)
 	
 	/* Get the date */
 	RTC_GetDate(RTC_Format_BCD, &RTC_DateStructure);
-	cur_date_time.rtc_date.date_year = RTC_DateStructure.RTC_Year + 2000;
-	cur_date_time.rtc_date.date_month = RTC_DateStructure.RTC_Month;
-	cur_date_time.rtc_date.date_day = RTC_DateStructure.RTC_Date;
-	cur_date_time.rtc_date.date_weekday = RTC_DateStructure.RTC_WeekDay;
+	cur_date_time.rtc_date.date_year = bcd_to_decimal(RTC_DateStructure.RTC_Year) + 2000;
+	cur_date_time.rtc_date.date_month = bcd_to_decimal(RTC_DateStructure.RTC_Month);
+	cur_date_time.rtc_date.date_day = bcd_to_decimal(RTC_DateStructure.RTC_Date);
+	cur_date_time.rtc_date.date_weekday = bcd_to_decimal(RTC_DateStructure.RTC_WeekDay);
 
 	/* Get the time */
 	RTC_GetTime(RTC_Format_BCD, &RTC_TimeStructure);
-	cur_date_time.rtc_time.time_hours = RTC_TimeStructure.RTC_Hours;
-	cur_date_time.rtc_time.time_minutes = RTC_TimeStructure.RTC_Minutes;
-	cur_date_time.rtc_time.time_seconds = RTC_TimeStructure.RTC_Seconds;
+	cur_date_time.rtc_time.time_hours = bcd_to_decimal(RTC_TimeStructure.RTC_Hours);
+	cur_date_time.rtc_time.time_minutes = bcd_to_decimal(RTC_TimeStructure.RTC_Minutes);
+	cur_date_time.rtc_time.time_seconds = bcd_to_decimal(RTC_TimeStructure.RTC_Seconds);
 
 	/* return struct for date and time */
 	return cur_date_time;
@@ -255,14 +255,15 @@ void System_RTC_Init(void)
 	/* RTC basic struct Initalization */
 	RTC_Config_Init();
 
-	/* Set the time and date 2020/08/18 13:00:00  */
-	initdate.rtc_date.date_year = 0x07E4;  /* 2020 = 2000 + 20 */
+	/* Set the time and date 2021/08/14 13:00:00  */
+	//initdate.rtc_date.date_year = 0x07E5;  /* 2021 = 2000 + 21 */
+	initdate.rtc_date.date_year = 0x15;
 	initdate.rtc_date.date_month = 0x08;
-	initdate.rtc_date.date_day = 0x12;
-	initdate.rtc_date.date_weekday = 2;
+	initdate.rtc_date.date_day = 0x0E;
+	initdate.rtc_date.date_weekday = 6;
 	initdate.rtc_time.time_hours = 0x0D;
-	initdate.rtc_time.time_minutes = 00;
-	initdate.rtc_time.time_seconds = 00;
+	initdate.rtc_time.time_minutes = 0x00;
+	initdate.rtc_time.time_seconds = 0x00;
 	RTC_TimeAndDate_Set(&initdate);
 
 	PDEBUG("\rSet the Init time is: %d/%02d/%02d %02d:%02d:%02d\n", initdate.rtc_date.date_year, initdate.rtc_date.date_month, \

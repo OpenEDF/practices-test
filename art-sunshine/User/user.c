@@ -25,6 +25,12 @@
 /* Includes ------------------------------------------------------------------*/
 #include "user.h"
 #include "motor.h"
+#include "lcd.h"
+#include "uart.h"
+#include "timer.h"
+#include "led.h"
+#include "key.h"
+#include "pvd.h"
 
 /** @addtogroup User_Driver
   * @{
@@ -43,6 +49,10 @@
 
 /* Private variables ---------------------------------------------------------*/
 SYSTEM_INFORMATION Art_Sunshine_Info;
+static char lcd_default_context[] = "CLR(0);DCV32(90,5,'System State',5);PL(0,40,376,40,4);\
+DCV24(15,60,'Sunrise: 06:13  Sunset: 18:23',2);DCV24(70,90,'Wind Speed: 8.8 m/s',2);\
+DCV24(15,120,'LTE Operation status: ',2);CIRF(300,132,8,1);PL(0,179,376,179,4);\
+DCV24(20,184,'Map: 31.239692бу 121.499755бу',5);DCV24(54,213,'2021/08/14 13:00:00',5);";
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -68,45 +78,45 @@ void System_Init(void)
 	
 	/* system UART Initalizes */
 	System_USART_Init();
-	PDEBUG("\rSystem UART Initalized.\n");
-	PDEBUG("\rThe system clock: %d Hz.\n", get_system_clock.SYSCLK_Frequency);
+	PDEBUG("\r[OK] System UART Initalized.\n");
+	PDEBUG("\r[OK] The system clock: %d Hz.\n", get_system_clock.SYSCLK_Frequency);
 	
 	/* system LED Initalizes */
 	System_LED_Init();
-	PDEBUG("\rSystem LED Initalized.\n");
+	PDEBUG("\r[OK] System LED Initalized.\n");
  
 	/* Basic Timer config */
 	TIM6_Configuration();
 	TIM2_Configuration();
-	PDEBUG("\rSystem TIMER6 & TIMER2 Initalized.\n");
+	PDEBUG("\r[OK] System TIMER6 & TIMER2 Initalized.\n");
 
 	/* system sensor Init  */
 	Sensor_Init();
-	PDEBUG("\rSystem Seneor Initalized.\n");
+	PDEBUG("\r[OK] System Seneor Initalized.\n");
 	
 	/* system RTC Init */
 	System_RTC_Init();
-	PDEBUG("\rSystem RTC Initalized.\n");
+	PDEBUG("\r[OK] System RTC Initalized.\n");
 
 	/* system LED Init */
 	TASK_LED_ON();
-	PDEBUG("\rSystem TASK LED Initalized.\n");
+	PDEBUG("\r[OK] System TASK LED Initalized.\n");
 	
 	/* system BEEP Init */
-//	System_Beep_Init();
-	PDEBUG("\rSystem BEEP Initalized.\n");
+	System_Beep_Init();
+	PDEBUG("\r[OK] System BEEP Initalized.\n");
 
 	/* system KEY Init */
 	EXTI_KEY_Config();
-	PDEBUG("\rSystem KEY Configured.\n");
+	PDEBUG("\r[OK] System KEY Configured.\n");
 
 	/* system LTE moudle Init */
 	LTE_DeInit();
-	PDEBUG("\rSystem LTE Moudles Initalized.\n");
+	PDEBUG("\r[OK] System LTE Moudles Initalized.\n");
 
 	/* system PVD Config */
 	PVD_Config(PVD_LEVEL_2_7);
-	PDEBUG("\rsystem PVD Configured.\n");
+	PDEBUG("\r[OK] system PVD Configured.\n");
 	
 	/* system motor pwm Init */
 	system_motor_init(MOTOR_1000HZ_PARAMEMTERS);
@@ -114,18 +124,18 @@ void System_Init(void)
 
 	/* system LCD_Init */
 	LCD_Init();
-	PDEBUG("\rsystem LCD Initalized.\n");
+	PDEBUG("\r[OK] system LCD Initalized.\n");
 
 	/* system parameters Initalized */
 	Flash_LoadWorkParam();
 	Flash_ReadByte(FLASH_WORK_PARAM_ADDR, &Flash_ID);
 	//if (Flash_ID != 'W') 
 	//{
-		PDEBUG("\rStore the System parameters to Flash.\n");
+		PDEBUG("\r[OK] Store the System parameters to Flash.\n");
 		Flash_SaveWorkParam();
 	//}
 
-	PDEBUG("\rSystem Iniatlized.\n");
+	PDEBUG("\r[OK] System Iniatlized.\n");
 	/* END */
 }
 
@@ -140,22 +150,12 @@ void Calibration_Time(void)
 	RTC_Type current_time;
 	
 	/* check the date and time from Aliyun and set local RTC */
-	
 	LTE_ATE0();		/* CLOSE THE ECH0 */
 	
 	current_time = LTE_QueryRTC();
-	PDEBUG("\rThe Current Time: %02d/%02d/%02d - %02d:%02d:%02d.\n", current_time.rtc_date.date_year, current_time.rtc_date.date_month, \
+	PDEBUG("\r[OK] The Current Time: %02d/%02d/%02d - %02d:%02d:%02d.\n", current_time.rtc_date.date_year, current_time.rtc_date.date_month, \
 													current_time.rtc_date.date_day, current_time.rtc_time.time_hours,  \
 													current_time.rtc_time.time_minutes, current_time.rtc_time.time_seconds);
-	
-	/* Calculater the time of sunset and sunrise */
-	Art_Sunshine_Info.sunrise_set = ClaculSun_RiseSet(current_time, Art_Sunshine_Info.HangZhou);
-	PDEBUG("\rToday Sunrise Time: %02d:%02d, SunSet Time: %02d:%02d.\n", 	\
-		Art_Sunshine_Info.sunrise_set.sunrise_time.time_hours,  \
-		Art_Sunshine_Info.sunrise_set.sunrise_time.time_minutes,\
-		Art_Sunshine_Info.sunrise_set.sunset_time.time_hours,   \
-		Art_Sunshine_Info.sunrise_set.sunset_time.time_minutes);
-
 	/* upadate the time  */
 	RTC_TimeAndDate_Set(&current_time);
 }
@@ -172,16 +172,19 @@ void CalSUNRiseSet_Time(void)
 	/* calculater the sun rise and sun set time's than very day */
 	current_time = RTC_TimeAndDate_Get();
 	
-	PDEBUG("The Current Time: %d/%d/%d - %d:%d:%d", current_time.rtc_date.date_year, current_time.rtc_date.date_month, \
+	PDEBUG("\r[OK] The Current Time: %04d/%02d/%02d - %02d:%02d:%02d", current_time.rtc_date.date_year, current_time.rtc_date.date_month, \
 													current_time.rtc_date.date_day, current_time.rtc_time.time_hours,  \
 													current_time.rtc_time.time_minutes, current_time.rtc_time.time_seconds);
 		
 	Art_Sunshine_Info.sunrise_set = ClaculSun_RiseSet(current_time, Art_Sunshine_Info.HangZhou);
-	PDEBUG("Today Sunrise Time: %d:%d, SunSet Time: %d:%d\n", 	\
+	PDEBUG("\r[OK] Today Sunrise Time: %02d:%02d, SunSet Time: %02d:%02d\n", \
 		Art_Sunshine_Info.sunrise_set.sunrise_time.time_hours,  \
 		Art_Sunshine_Info.sunrise_set.sunrise_time.time_minutes,\
 		Art_Sunshine_Info.sunrise_set.sunset_time.time_hours,   \
 		Art_Sunshine_Info.sunrise_set.sunset_time.time_minutes);
+
+	/* update lcd */
+	lcd_update_sunset_rise();
 }
 
 /**
@@ -195,7 +198,7 @@ void Wait_LTEStartUp(uint8_t sec)
 	uint8_t endtime;
 	/* Wait the LTE Moudles Start up */
 	endtime = seconds + sec;
-	PDEBUG("\rWait for the LTE moudles to start up... %ds.\n", sec);
+	PDEBUG("\r[OK] Wait for the LTE moudles to start up... %ds.\n", sec);
 	
   	while (seconds < endtime);
 
@@ -213,18 +216,18 @@ void Wait_LTEStartUp(uint8_t sec)
 void LCD_DefaultShow(void)
 {
 	/* clear the background */
-	Send_DataTo_LCD("CLR(0);"); /* background */
+	//Send_DataTo_LCD("CLR(0);"); /* background */
 
 	/* default setting */
-	Send_DataTo_LCD("DCV32(90,5,'System State',5);");
-	Send_DataTo_LCD("PL(0,40,376,40,4);");
-	Send_DataTo_LCD("DCV24(15,60,'Sunrise: 06:13  Sunset: 18:23',2);");
-	Send_DataTo_LCD("DCV24(70,90,'Wind Speed: 8.8 m/s',2);");
-	Send_DataTo_LCD("DCV24(15,120,'LTE Operation status: ',2);");
-	Send_DataTo_LCD("CIRF(300,132,8,1);");
-	Send_DataTo_LCD("PL(0,179,376,179,4);");
-	Send_DataTo_LCD("DCV24(50,184,'Map: 31.239692бу 121.499755бу',5);");
-	Send_DataTo_LCD("DCV24(54,213,'2020/10/17 18:25:00',5);");
+	//Send_DataTo_LCD("DCV32(90,5,'System State',5);");
+	//Send_DataTo_LCD("PL(0,40,376,40,4);");
+	//Send_DataTo_LCD("DCV24(15,60,'Sunrise: 06:13  Sunset: 18:23',2);");
+	//Send_DataTo_LCD("DCV24(70,90,'Wind Speed: 8.8 m/s',2);");
+	//Send_DataTo_LCD("DCV24(15,120,'LTE Operation status: ',2);");
+	//Send_DataTo_LCD("CIRF(300,132,8,1);");
+	//Send_DataTo_LCD("PL(0,179,376,179,4);");
+	//Send_DataTo_LCD("DCV24(20,184,'Map: 31.239692бу 121.499755бу',5);");
+	//Send_DataTo_LCD("DCV24(54,213,'2021/08/14 13:00:00',5);");
 
 	/*
 	+++++++++++++++++++++++++++++++++
@@ -237,6 +240,7 @@ void LCD_DefaultShow(void)
 	+     2020/10/17 18:25:00       +
 	+++++++++++++++++++++++++++++++++	
 	*/
+	lcd_uart_tx_str(lcd_default_context);
 }
 
 /**
@@ -247,26 +251,97 @@ void LCD_DefaultShow(void)
   */
 void display_system_status(void)
 {
-	PDEBUG("\rDisplay the system state.\n");
+	PDEBUG("\r[OK] Display the system state.\n");
 
 	/* LTE state */
 	if (Art_Sunshine_Info.lte_status == online)
-		PDEBUG("\rLTE Status: online.\n");
+		PDEBUG("\r[OK] LTE Status: online.\n");
 	else
-		PDEBUG("\rLTE Status: offline.\n");
+		PDEBUG("\r[OK] LTE Status: offline.\n");
 
 	/* Wind speed sendor Device */
 	if (Art_Sunshine_Info.winddevice_status == EXIST)
-		PDEBUG("\rWind Speed Sensor Status: EXIST.\n");
+		PDEBUG("\r[OK] Wind Speed Sensor Status: EXIST.\n");
 	else
-		PDEBUG("\rWind Speed Sensor Status: LOST.\n");
+		PDEBUG("\r[OK] Wind Speed Sensor Status: LOST.\n");
 
 	/* Wind speed */
-	PDEBUG("\rCurrent wind speed: %f m/s.\n", Art_Sunshine_Info.windspeed);
-	PDEBUG("\rCurrent wind speed threshold: %d m/s.\n", Art_Sunshine_Info.windspeed_threshold);
-
-	
+	PDEBUG("\r[OK] Current wind speed: %f m/s.\n", Art_Sunshine_Info.windspeed);
+	PDEBUG("\r[OK] Current wind speed threshold: %d m/s.\n", Art_Sunshine_Info.windspeed_threshold);
 }
+
+/**
+  * @function   lcd_update_time
+  * @brief      update the time and show LCD.
+  * @param[in]  None.
+  * @retval     None.
+  */
+void lcd_update_time(void)
+{
+	char str_timeupdate[64] = "DCV24(54,213,'2020/10/17 18:25:00',5);";
+	RTC_Type current_time;
+	uint16_t temp;
+	
+	current_time = RTC_TimeAndDate_Get();
+	/* year */
+	str_timeupdate[14] = (current_time.rtc_date.date_year / 1000) + 0x30;
+	temp = current_time.rtc_date.date_year % 1000;
+	str_timeupdate[15] = (temp / 100) + 0x30;
+	temp = temp % 100;
+	str_timeupdate[16] = (temp / 10) + 0x30;
+	str_timeupdate[17] = (temp % 10) + 0x30;
+
+	/* month */
+	str_timeupdate[19] = (current_time.rtc_date.date_month / 10) + 0x30;
+	str_timeupdate[20] = (current_time.rtc_date.date_month % 10) + 0x30;
+
+	/* day */
+	str_timeupdate[22] = (current_time.rtc_date.date_day / 10) + 0x30;
+	str_timeupdate[23] = (current_time.rtc_date.date_day % 10) + 0x30;
+
+	/* hour */
+	str_timeupdate[25] = (current_time.rtc_time.time_hours / 10) + 0x30;
+	str_timeupdate[26] = (current_time.rtc_time.time_hours % 10) + 0x30;
+
+	/* minutes */
+	str_timeupdate[28] = (current_time.rtc_time.time_minutes / 10) + 0x30;
+	str_timeupdate[29] = (current_time.rtc_time.time_minutes % 10) + 0x30;
+			
+	/* second */
+	str_timeupdate[31] = (current_time.rtc_time.time_seconds / 10) + 0x30;
+	str_timeupdate[32] = (current_time.rtc_time.time_seconds % 10) + 0x30;
+
+	/* show to the lcd */
+	lcd_uart_tx_str(str_timeupdate);
+}
+
+/**
+  * @function   lcd_update_sunset_rise
+  * @brief      update the sun set and sun rise time.
+  * @param[in]  None.
+  * @retval     None.
+  */
+void lcd_update_sunset_rise(void)
+{
+	char str_sunset_rise[64] = "DCV24(15,60,'Sunrise: 06:13  Sunset: 18:23',2);";
+
+	/* show to the lcd */
+	str_sunset_rise[22] = (Art_Sunshine_Info.sunrise_set.sunrise_time.time_hours / 10) + 0x30;
+	str_sunset_rise[23] = (Art_Sunshine_Info.sunrise_set.sunrise_time.time_hours % 10) + 0x30;
+
+	str_sunset_rise[25] = (Art_Sunshine_Info.sunrise_set.sunrise_time.time_minutes / 10) + 0x30;
+	str_sunset_rise[26] = (Art_Sunshine_Info.sunrise_set.sunrise_time.time_minutes % 10) + 0x30;
+	
+	str_sunset_rise[37] = (Art_Sunshine_Info.sunrise_set.sunset_time.time_hours / 10) + 0x30;
+	str_sunset_rise[38] = (Art_Sunshine_Info.sunrise_set.sunset_time.time_hours % 10) + 0x30;
+
+	str_sunset_rise[40] = (Art_Sunshine_Info.sunrise_set.sunset_time.time_minutes / 10) + 0x30;
+	str_sunset_rise[41] = (Art_Sunshine_Info.sunrise_set.sunset_time.time_minutes % 10) + 0x30;
+			
+	/* display the lcd */
+	lcd_uart_tx_str(str_sunset_rise);	
+}
+
 /**
   * @function   UserApplication_Task
   * @brief      User opeartion system and moniter.
@@ -275,20 +350,17 @@ void display_system_status(void)
   */
 void UserApplication_Task(void *pvParameters)
 {
-	/* system init and connect network */
-	char str[64] = "DCV24(15,60,'Sunrise: 06:13  Sunset: 18:23:00',2);";
-	uint16_t temp;
-	RTC_Type current_time;
-
-	/* Calibration time and caluculater the sunrise and sunset*/
-	Calibration_Time();
-
-	/* LTE Moudles connect Network */
-	LTE_ConnetNetwork();
-
 	/* LCD default display */
 	LCD_DefaultShow();
 
+	/* Calibration time and caluculater the sunrise and sunset*/
+	Calibration_Time();
+	CalSUNRiseSet_Time();
+
+	/* LTE Moudles connect Network */
+	//LTE_ConnetNetwork();
+
+	/* main task */
 	while(TRUE)
 	{
 		if(Art_Sunshine_Info.lte_status == online)
@@ -299,7 +371,7 @@ void UserApplication_Task(void *pvParameters)
 				case EXCEPTION_MODE:	/* Exception mode */
 					if ((second_count % Art_Sunshine_Info.interval_exception) == 0)
 					{
-						PDEBUG("\rException Mode system send the self information to Aliyun.\n");
+						PDEBUG("\r[OK] Exception Mode system send the self information to Aliyun.\n");
 						/* 4G moudle Transmit the system information */
 						LTE_SendMessage();
 						/* display system state */
@@ -311,7 +383,7 @@ void UserApplication_Task(void *pvParameters)
 				case SLEEP_MODE:
 					if ((second_count % Art_Sunshine_Info.interval_normal) == 0)
 					{
-						PDEBUG("\rNormal Mode system send the self information to Aliyun.\n");
+						PDEBUG("\r[OK] Normal Mode system send the self information to Aliyun.\n");
 						/* 4G moudle Transmit the system information */
 						LTE_SendMessage();
 						display_system_status();
@@ -326,73 +398,14 @@ void UserApplication_Task(void *pvParameters)
 		}
 		else
 		{
-			PDEBUG("\rConnecting the LTE Device to the network.\n");
+			PDEBUG("\r[OK] Connecting the LTE Device to the network.\n");
 			LTE_ConnetNetwork();	
 		}
 
-		/* moniter the alarm interrrupt */
-		if (Alarm_Flag == 0xFF)
-		{
-			/* check the local time */
-			Calibration_Time();
-
-			vTaskDelay(pdMS_TO_TICKS(1000));
-
-			/* calculater the sunrise and sunset time for new day */
-			CalSUNRiseSet_Time();	
-
-			/* show to the lcd */
-			str[22] = (Art_Sunshine_Info.sunrise_set.sunrise_time.time_hours / 10) + 0x30;
-			str[23] = (Art_Sunshine_Info.sunrise_set.sunrise_time.time_minutes % 10) + 0x30;
-
-			str[25] = (Art_Sunshine_Info.sunrise_set.sunset_time.time_hours / 10) + 0x30;
-			str[26] = (Art_Sunshine_Info.sunrise_set.sunset_time.time_hours % 10) + 0x30;
-
-			Send_DataTo_LCD(str);
-			/* Clear the Alarm Flag */
-			Alarm_Flag = 0x00;
-		}
-
 		/* moniter the second interrupt */
-		if (Second_Flag == 0xFF)
-		{
-			current_time = RTC_TimeAndDate_Get();
-			/* year */
-			str[14] = (current_time.rtc_date.date_year / 1000) + 0x30;
-			temp = current_time.rtc_date.date_year % 1000;
-			str[15] = (temp / 100) + 0x30;
-			temp = temp % 100;
-			str[16] = (temp / 10) + 0x30;
-			str[17] = (temp % 10) + 0x30;
-
-			/* month */
-			str[19] = (current_time.rtc_date.date_month / 10) + 0x30;
-			str[20] = (current_time.rtc_date.date_month % 10) + 0x30;
-
-			/* day */
-			str[22] = (current_time.rtc_date.date_day / 10) + 0x30;
-			str[23] = (current_time.rtc_date.date_day % 10) + 0x30;
-
-			/* hour */
-			str[25] = (current_time.rtc_time.time_hours / 10) + 0x30;
-			str[26] = (current_time.rtc_time.time_hours % 10) + 0x30;
-
-			/* minutes */
-			str[28] = (current_time.rtc_time.time_minutes / 10) + 0x30;
-			str[29] = (current_time.rtc_time.time_minutes % 10) + 0x30;
-			
-			/* second */
-			str[31] = (current_time.rtc_time.time_seconds / 10) + 0x30;
-			str[32] = (current_time.rtc_time.time_seconds % 10) + 0x30;
-
-			/* show to the lcd */
-			Send_DataTo_LCD(str);
-
-		}
-		vTaskDelay(pdMS_TO_TICKS(500));
+		vTaskDelay(pdMS_TO_TICKS(1000));
 	}
 }
-
 
 /**
   * @}

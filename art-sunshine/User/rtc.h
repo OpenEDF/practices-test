@@ -68,8 +68,6 @@ typedef struct {
 
 /* Exported constants --------------------------------------------------------*/
 extern uint32_t second_count;		/* RTC second */
-extern uint8_t Alarm_Flag;			/* RTC Alarm interrupt Flag */
-extern uint8_t Second_Flag;			/* RTC Second Flag */
 
 /* Exported macro ------------------------------------------------------------*/
 #define RTC_WACKUP_COUNT	(2039)	/* RTC Wake up conuter */
