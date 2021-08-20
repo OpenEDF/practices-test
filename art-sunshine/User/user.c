@@ -369,6 +369,7 @@ void lcd_update_sun_ea(void)
 {
 	Alta_Azim altazi_value;
 	RTC_Type date_time;
+    uint32_t temp;
 
 	/* get the cureent time */
 	date_time = RTC_TimeAndDate_Get();
