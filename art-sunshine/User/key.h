@@ -43,8 +43,14 @@
 /* Exported constants --------------------------------------------------------*/
 	
 /* Exported macro ------------------------------------------------------------*/
-#define KEY_GPIO_Port	GPIOE			/* The system key GPIO Port */
-#define KEY_GPIO_Pin	GPIO_Pin_0		/* The system key GPIO Pin */
+/* GPIO E0 IS KEY EXIT, TODO: GPIO G0 */
+#define KEY_GPIO_Port			GPIOE			/* The system key GPIO Port */
+#define KEY_GPIO_Pin			GPIO_Pin_0		/* The system key GPIO Pin */
+#define KEY_GPIO_CLK			RCC_AHB1Periph_GPIOE
+#define KEY_EXIT_PORTSOURCE		EXTI_PortSourceGPIOE
+#define KEY_EXIT_PINSOURCEE		EXTI_PinSource0
+#define KEY_EXIT_LINE			EXTI_Line0
+#define KEY_EXIT_IRQ			EXTI0_IRQn
 
 /* Exported functions --------------------------------------------------------*/
 void EXTI_KEY_Config(void);

@@ -52,8 +52,11 @@
 SYSTEM_INFORMATION Art_Sunshine_Info;
 static char *lcd_default_context = "CLR(0);DCV32(90,5,'System State',5);PL(0,40,376,40,4);\
 DCV24(15,60,'Sunrise: 06:13  Sunset: 18:23',2);DCV24(70,90,'Wind Speed: 8.8 m/s',2);\
-DCV24(15,120,'LTE Operation status: ',2);CIRF(300,132,8,1);PL(0,179,376,179,4);\
-DCV24(20,184,'Map: 31.239692бу 121.499755бу',5);DCV24(54,213,'2021/08/14 13:00:00',5);";
+DCV24(15,120,'LTE Operation status: ',2);DCV24(30,150,'Elev: 180.00  Azim: 180.00',2);\
+CIRF(300,132,8,1);PL(0,179,376,179,4);DCV24(20,184,'Map: 31.239692бу 121.499755бу',5);\
+DCV24(54,213,'2021/08/14 13:00:00',5);";
+
+char str_sun_ea[LCD_BUFFER_SIZE] = "SBC(0);DCV24(30,150,'Elev: 180.00  Azim: 180.00',2);";
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -344,6 +347,56 @@ void lcd_update_sunset_rise(void)
 }
 
 /**
+  * @function   lcd_update_title
+  * @brief      update the title display for lcd.
+  * @param[in]  None.
+  * @retval     None.
+  */
+void lcd_update_title(void)
+{
+	char lcd_title[LCD_BUFFER_SIZE] = "SBC(0);DCV32(90,5,'System State',5);";
+	/* display the lcd */
+	lcd_uart_tx_str(lcd_title);
+}
+
+/**
+  * @function   lcd_update_sun_ea
+  * @brief      update the sun Eleative and Azimuth angle for lcd.
+  * @param[in]  None.
+  * @retval     None.
+  */
+void lcd_update_sun_ea(void)
+{
+	Alta_Azim altazi_value;
+	RTC_Type date_time;
+
+	/* get the cureent time */
+	date_time = RTC_TimeAndDate_Get();
+
+	/* calculater the sun pittch and azimuth */
+	altazi_value = ClaculSun_AltAzi(date_time, Art_Sunshine_Info.HangZhou);
+	PDEBUG("\r[INFO] The altazi_value is: altangle: %f\t azimuths: %f\t\n", altazi_value.altangles, altazi_value.azimuths);
+
+	/* set the elevation angle,eg:180.88 */
+	str_sun_ea[27] = altazi_value.altangles + 0x30;
+	str_sun_ea[28] = altazi_value.altangles + 0x30;
+	str_sun_ea[29] = altazi_value.altangles + 0x30;
+	str_sun_ea[31] = altazi_value.altangles + 0x30;
+	str_sun_ea[32] = altazi_value.altangles + 0x30;
+
+	/* set the azimuth angle, eg:180.88 */
+	str_sun_ea[27] = altazi_value.azimuths + 0x30;
+	str_sun_ea[28] = altazi_value.azimuths + 0x30;
+	str_sun_ea[29] = altazi_value.azimuths + 0x30;
+	str_sun_ea[31] = altazi_value.azimuths + 0x30;
+	str_sun_ea[32] = altazi_value.azimuths + 0x30;
+
+	/* display the lcd */
+	lcd_uart_tx_str(str_sun_ea);
+}
+
+
+/**
   * @function   UserApplication_Task
   * @brief      User opeartion system and moniter.
   * @param[in]  pvParameters: default.
@@ -402,6 +455,10 @@ void UserApplication_Task(void *pvParameters)
 			PDEBUG("\r[OK] Connecting the LTE Device to the network.\n");
 			LTE_ConnetNetwork();	
 		}
+
+		/* BUG: must update the LCD display title */
+		lcd_update_title();
+		lcd_update_sun_ea();
 
 		/* moniter the second interrupt */
 		vTaskDelay(pdMS_TO_TICKS(1000));

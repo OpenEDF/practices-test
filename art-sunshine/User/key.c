@@ -60,7 +60,7 @@ void EXTI_KEY_Config(void)
 	NVIC_InitTypeDef NVIC_InitStructure;
 
 	/* RCC Enable */
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
+	RCC_AHB1PeriphClockCmd(KEY_GPIO_CLK, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
 	
 	/* NVIC Config */
@@ -73,10 +73,10 @@ void EXTI_KEY_Config(void)
 
 	/* GPIO Config */
 	Config_GPIO_IN(KEY_GPIO_Port, KEY_GPIO_Pin);
-	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOE, EXTI_PinSource0);
+	SYSCFG_EXTILineConfig(KEY_EXIT_PORTSOURCE, KEY_EXIT_PINSOURCEE);
 
 	/* EXIT Config */
-	EXTI_InitStructure.EXTI_Line = EXTI_Line0;
+	EXTI_InitStructure.EXTI_Line = KEY_EXIT_LINE;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
 	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;

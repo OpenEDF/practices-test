@@ -309,8 +309,6 @@ void SunshineReadWind_Task(void *pvParameters)
 				Art_Sunshine_Info.wind_level);
 
 			/* show to the lcd */
-			//display_str_buffer[25+7] = (temp / 10) + 0x30;
-			//display_str_buffer[27+7] = (temp % 10) + 0x30;
 			display_str_buffer[32] = (temp / 10) + 0x30;
 			display_str_buffer[34] = (temp % 10) + 0x30;
 

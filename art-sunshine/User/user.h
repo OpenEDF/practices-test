@@ -83,9 +83,9 @@ void LCD_DefaultShow(void);
 void display_system_status(void);
 void lcd_update_time(void);
 void lcd_update_sunset_rise(void);
+void lcd_update_title(void);
+void lcd_update_sun_ea(void);
 void UserApplication_Task(void *pvParameters);
-
-
 
 #ifdef __cplusplus
 }
