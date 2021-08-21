@@ -203,7 +203,7 @@ void lcd_uart_tx_str(char *str)
 	USARTx_Send_String(USART2, temp);
 
 	/* Drbug */
-	PDEBUG("\r[OK] LCD Display: %s.\n", str);
+	//PDEBUG("\r[OK] LCD Display: %s.\n", str);
 }
 
 /**

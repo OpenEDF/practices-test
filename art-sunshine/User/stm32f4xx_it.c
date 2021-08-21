@@ -391,6 +391,7 @@ void EXTI9_5_IRQHandler(void)
 {
 	motor_operation_t *motor = NULL;
 	/* check the interrupt */
+	float32_t angle = 5.0f;
 
 	motor = &motor_opr[POINTER_A_MOTOR];
 	if(EXTI_GetITStatus(EXTI_Line5) != RESET) 
@@ -404,6 +405,10 @@ void EXTI9_5_IRQHandler(void)
 
 		/* update the motor state */
 		motor->motor_work = MOTOR_WORK_OK;
+
+		/* return 5, prevent motor damage. */
+		control_motor_run(motor, &angle, MOTOR_DIR_OPPOSITE);
+		
 		/* Clear the TI */
 		EXTI_ClearITPendingBit(EXTI_Line5); 
 	}
@@ -420,6 +425,10 @@ void EXTI9_5_IRQHandler(void)
 
 		/* update the motor state */
 		motor->motor_work = MOTOR_WORK_OK;
+
+		/* return 5, prevent motor damage. */
+		control_motor_run(motor, &angle, MOTOR_DIR_OPPOSITE);
+
 		/* Clear the TI */
 		EXTI_ClearITPendingBit(EXTI_Line6); 
 	}
@@ -436,6 +445,10 @@ void EXTI9_5_IRQHandler(void)
 
 		/* update the motor state */
 		motor->motor_work = MOTOR_WORK_OK;
+
+		/* return 5, prevent motor damage. */
+		control_motor_run(motor, &angle, MOTOR_DIR_OPPOSITE);
+		
 		/* Clear the TI */
 		EXTI_ClearITPendingBit(EXTI_Line7); 
 	}
@@ -452,6 +465,10 @@ void EXTI9_5_IRQHandler(void)
 
 		/* update the motor state */
 		motor->motor_work = MOTOR_WORK_OK;
+
+		/* return 5, prevent motor damage. */
+		control_motor_run(motor, &angle, MOTOR_DIR_OPPOSITE);
+		
 		/* Clear the TI */
 		EXTI_ClearITPendingBit(EXTI_Line8); 
 	}

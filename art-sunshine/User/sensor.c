@@ -145,7 +145,7 @@ PORT_BUF_FORMAT *SensorTxRx_Proc(uint8_t *cmd_frame, uint16_t cmd_size)
 	memcpy(txcmdbuffer->buffer, cmd_frame, cmd_size);
 
 	/* debug */
-	print_uart_data("[INFO] UART 485 Port Send data::", txcmdbuffer->buffer, txcmdbuffer->length);
+	//print_uart_data("[INFO] UART 485 Port Send data::", txcmdbuffer->buffer, txcmdbuffer->length);
 
 	/* send the command to deviced by 485 interface */
 	if(xQueueSendToBack(xSerialTxQueue, &txcmdbuffer, pdMS_TO_TICKS(100)) != pdPASS)
@@ -175,7 +175,7 @@ PORT_BUF_FORMAT *SensorTxRx_Proc(uint8_t *cmd_frame, uint16_t cmd_size)
 				memcpy(rxackbuffer->buffer, uartPtr->rxbuffer, rxackbuffer->length);
 				
 				/* debug */
-				print_uart_data("[INFO] UART 485 Port Receiver data:", rxackbuffer->buffer, rxackbuffer->length);
+				//print_uart_data("[INFO] UART 485 Port Receiver data:", rxackbuffer->buffer, rxackbuffer->length);
 				/* clear and initalizes the uart[485] buffer */
 				memset(uartPtr->rxbuffer, 0x00, uartPtr->rxbuf_count);
 				uartPtr->rxbuf_count = 0;

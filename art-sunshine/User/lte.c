@@ -103,7 +103,6 @@ void LTEReceiver_Task(void *pvParameters)
 				PDEBUG("\r[ERROR] The LTE moudles Received invaild Data.\n");
 			}	
 		}
-
 		/* given back the Sempher */
 		memset(cmdbuffer, 0x00, USERCMD_MAXSIZE);
 		vTaskDelay(pdMS_TO_TICKS(100));
@@ -148,6 +147,9 @@ void LTE_DeInit(void)
 	{
 		PDEBUG("\r[OK] The LTE LtePublishSemaphore is Created.\n");
 	}
+
+	/* set the lte offline */
+	Art_Sunshine_Info.lte_status = offline;
 }
 
 /**
@@ -367,6 +369,7 @@ void LTE_ConnetNetwork(void)
 
 	start_time = timer_counter;
 	end_time = timer_counter + LTEMAXJOINNETWORK_TIME;
+	Art_Sunshine_Info.lte_status = offline;	/* default offline */
 	
 	/* SET THE PARAMETERS AND JOIN THE NETWORK */
 	while(start_time < end_time)
@@ -452,14 +455,14 @@ void LTE_ConnetNetwork(void)
 		Art_Sunshine_Info.lte_status = online; 
 		
 		/* show to the lcd */
-		lcd_uart_tx_str("CIRF(300,132,8,2);");
+		lcd_uart_tx_str("SBC(0);DCV24(15,120,'LTE Operation status: ',2);CIRF(300,132,8,2);");
 		PDEBUG("\r[OK] LTE Device connection successful!\n");
 	}
 	else
 	{
 		Art_Sunshine_Info.lte_status = offline; 
 		/* show to the lcd */
-		lcd_uart_tx_str("CIRF(300,132,8,1);");
+		lcd_uart_tx_str("SBC(0);DCV24(15,120,'LTE Operation status: ',2);CIRF(300,132,8,1);");
 		
 		PDEBUG("\r[ERROR] LTE Device connection Failure!\n");
 		PDEBUG("\r[ERROR] Please Check it!\n");
@@ -897,27 +900,19 @@ RTC_Type LTE_QueryRTC(void)
 	if(result != R_ERROR)
 	{
 		/* Read the date */
-		curdate.rtc_date.date_year = ((ackbuffer->buffer[10] - 48)* 10) + ackbuffer->buffer[11] - 48 + 2000;
-		curdate.rtc_date.date_month = ((ackbuffer->buffer[13] - 48) * 10) + ackbuffer->buffer[14] - 48;
-		curdate.rtc_date.date_day = ((ackbuffer->buffer[16] - 48) * 10) + ackbuffer->buffer[17] - 48;
+		curdate.rtc_date.date_year = ((ackbuffer->buffer[10] - 0x30)* 10) + ackbuffer->buffer[11] - 0x30;
+		curdate.rtc_date.date_month = ((ackbuffer->buffer[13] - 0x30) * 10) + ackbuffer->buffer[14] - 0x30;
+		curdate.rtc_date.date_day = ((ackbuffer->buffer[16] - 0x30) * 10) + ackbuffer->buffer[17] - 0x30;
+		curdate.rtc_date.date_weekday = 0;
 	
 		/* Read the time */
-		curdate.rtc_time.time_hours = ((ackbuffer->buffer[19] - 48) * 10) + ackbuffer->buffer[20] - 48;
-		curdate.rtc_time.time_minutes = ((ackbuffer->buffer[22] - 48) * 10) + ackbuffer->buffer[23] - 48;
-		curdate.rtc_time.time_seconds = ((ackbuffer->buffer[25] - 48) * 10) + ackbuffer->buffer[26] - 48;
+		curdate.rtc_time.time_hours = ((ackbuffer->buffer[19] - 0x30) * 10) + ackbuffer->buffer[20] - 0x30;
+		curdate.rtc_time.time_minutes = ((ackbuffer->buffer[22] - 0x30) * 10) + ackbuffer->buffer[23] - 0x30;
+		curdate.rtc_time.time_seconds = ((ackbuffer->buffer[25] - 0x30) * 10) + ackbuffer->buffer[26] - 0x30;
 
 		vPortFree(ackbuffer);
 		return curdate;
 	}
-	
-	/* return the current data */  /* test */
-	curdate.rtc_date.date_year = 21;
-	curdate.rtc_date.date_month = 8;
-	curdate.rtc_date.date_day = 14;
-
-	curdate.rtc_time.time_hours = 13;
-	curdate.rtc_time.time_minutes = 0;
-	curdate.rtc_time.time_seconds = 0;
 	return curdate;
 }
 
