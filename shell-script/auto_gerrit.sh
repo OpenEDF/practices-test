@@ -22,7 +22,7 @@ function print_help()
 # 2. get the current change id and set env
 USER='yang.zhixiong'
 SERVER='192.168.100.51'
-CUR_ChangeId=$(git log -1 | tail +7 | sed s/'    Change-Id: '//)
+CUR_ChangeId=$(git log -1 | grep Change-Id | sed s/'    Change-Id: '//)
 CLIARGUM=$1
 REVIEWERS='-a huang.shuoshuo@wuqi-tech.com -a chen.stephen@wuqi-tech.com -a yuan.sam@wuqi-tech.com
            -a mao.zhiqiang@wuqi-tech.com -a ge.yiqiao@wuqi-tech.com -a qu.chengkang@wuqi-tech.com'
