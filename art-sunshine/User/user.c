@@ -51,7 +51,7 @@
 /* Private variables ---------------------------------------------------------*/
 SYSTEM_INFORMATION Art_Sunshine_Info;
 static char *lcd_default_context = "CLR(0);DCV32(90,5,'System State',5);PL(0,40,376,40,4);\
-DCV24(15,60,'Sunrise: 06:13  Sunset: 18:23',2);DCV24(70,90,'Wind Speed: 8.8 m/s',2);\
+DCV24(15,60,'Sunrise: 06:13  Sunset: 18:23',2);DCV24(70,90,'Wind Speed: 88.8 m/s',2);\
 DCV24(15,120,'LTE Operation status: ',2);DCV24(30,150,'Elev: 180.00  Azim: 180.00',2);\
 CIRF(300,132,8,1);PL(0,179,376,179,4);DCV24(20,184,'Map: 31.239692бу 121.499755бу',5);\
 DCV24(54,213,'2021/08/14 13:00:00',5);";
@@ -381,12 +381,8 @@ void lcd_update_sun_ea(void)
 {
 	Alta_Azim altazi_value;
 	RTC_Type date_time;
-<<<<<<< HEAD
 	uint32_t temp_ea;
 	uint32_t temp;
-=======
-    uint32_t temp;
->>>>>>> bff8f776326464007d0c13f2374619502f3c1f80
 
 	/* get the cureent time */
 	date_time = RTC_TimeAndDate_Get();
@@ -485,12 +481,12 @@ void UserApplication_Task(void *pvParameters)
 		/* BUG: must update the LCD display title */
 		lcd_update_title();
 		vTaskDelay(pdMS_TO_TICKS(500));	/* must set */
-		//lcd_uart_tx_str(draw_line);
-		//vTaskDelay(pdMS_TO_TICKS(500));	/* must set */
+		lcd_uart_tx_str(draw_line);
+		vTaskDelay(pdMS_TO_TICKS(500));	/* must set */
 		lcd_uart_tx_str(map_dis);
-		vTaskDelay(pdMS_TO_TICKS(1000));	/* must set */
+		vTaskDelay(pdMS_TO_TICKS(500));	/* must set */
 		lcd_update_sun_ea();
-		vTaskDelay(pdMS_TO_TICKS(1000)); 	/* must set */
+		vTaskDelay(pdMS_TO_TICKS(500)); 	/* must set */
 		CalSUNRiseSet_Time();
 		/* moniter the second interrupt */
 		vTaskDelay(pdMS_TO_TICKS(2000));
