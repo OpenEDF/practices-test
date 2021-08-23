@@ -194,7 +194,7 @@ void SunshineControl_Task(void *pvParameters)
 	
 	while(TRUE)
 	{
-		PDEBUG("\rSunshineControl_Task is Runing.\n");
+		PDEBUG("\r[OK] SunshineControl_Task is Runing.\n");
 		/* get the system motor status */
 		motor_state = get_system_motor_check_state();
 		if ((motor_state == MOTOR_ALL_WORK_OK) && (Art_Sunshine_Info.lte_status == online))

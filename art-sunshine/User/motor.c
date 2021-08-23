@@ -884,6 +884,7 @@ void motor_test(void)
 		if (motor_t->motor_work != MOTOR_WORK_OK)
 			motor_t->motor_work = MOTOR_WORK_OK;
 		control_motor_run(motor_t, &angle, MOTOR_DIR_POSITIVER);	
+		motor_t->motor_work = MOTOR_WORK_ERROR;
 	}
 }
 

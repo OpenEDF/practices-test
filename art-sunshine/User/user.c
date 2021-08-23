@@ -51,14 +51,16 @@
 /* Private variables ---------------------------------------------------------*/
 SYSTEM_INFORMATION Art_Sunshine_Info;
 static char *lcd_default_context = "CLR(0);DCV32(90,5,'System State',5);PL(0,40,376,40,4);\
-DCV24(15,60,'Sunrise: 06:13  Sunset: 18:23',2);DCV24(70,90,'Wind Speed: 88.8 m/s',2);\
-DCV24(15,120,'LTE Operation status: ',2);DCV24(30,150,'Elev: 180.00  Azim: 180.00',2);\
+DCV24(15,60,'Sunrise: 00:00  Sunset: 00:00',2);DCV24(70,90,'Wind Speed: 00.0 m/s',2);\
+DCV24(15,120,'LTE Operation status: ',2);DCV24(30,150,'Elev: +00.00  Azim: 000.00',2);\
 CIRF(300,132,8,1);PL(0,179,376,179,4);DCV24(20,184,'Map: 31.239692бу 121.499755бу',5);\
-DCV24(54,213,'2021/08/14 13:00:00',5);";
+DCV24(70,213,'2021/08/14 13:00:00',5);";
 
-char str_sun_ea[LCD_BUFFER_SIZE] = "SBC(0);DCV24(30,150,'Elev: 180.00  Azim: 180.00',2);";
-char draw_line[LCD_BUFFER_SIZE] = "PL(0,40,376,40,4);PL(0,179,376,179,4);";
+char str_sun_ea[LCD_BUFFER_SIZE] = "SBC(0);DCV24(30,150,'Elev: +00.00  Azim: 000.00',2);";
+char draw_lineup[LCD_BUFFER_SIZE] = "PL(0,40,376,40,4);";
+char draw_linedown[LCD_BUFFER_SIZE] = "PL(0,179,376,179,4);";
 char map_dis[LCD_BUFFER_SIZE] = "SBC(0);DCV24(20,184,'Map: 31.239692бу 121.499755бу',5);";
+char lteonline[LCD_BUFFER_SIZE] = "CIRF(300,132,8,2);";
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -267,7 +269,7 @@ void LCD_DefaultShow(void)
   */
 void display_system_status(void)
 {
-	PDEBUG("\r[OK] Display the system state.\n");
+	PDEBUG("\r[OK] ======== Display the system state ======\n");
 
 	/* LTE state */
 	if (Art_Sunshine_Info.lte_status == online)
@@ -284,6 +286,7 @@ void display_system_status(void)
 	/* Wind speed */
 	PDEBUG("\r[OK] Current wind speed: %f m/s.\n", Art_Sunshine_Info.windspeed);
 	PDEBUG("\r[OK] Current wind speed threshold: %d m/s.\n", Art_Sunshine_Info.windspeed_threshold);
+	PDEBUG("\r[OK] ============= Display End ==============\n");
 }
 
 /**
@@ -294,7 +297,7 @@ void display_system_status(void)
   */
 void lcd_update_time(void)
 {
-	char str_timeupdate[LCD_BUFFER_SIZE] = "SBC(0);DCV24(54,213,'2021/08/19 18:00:00',5);";
+	char str_timeupdate[LCD_BUFFER_SIZE] = "SBC(0);DCV24(70,213,'2021/08/19 18:00:00',5);";
 	RTC_Type current_time;
 	uint16_t temp;
 	
@@ -391,12 +394,20 @@ void lcd_update_sun_ea(void)
 	altazi_value = ClaculSun_AltAzi(date_time, Art_Sunshine_Info.HangZhou);
 	PDEBUG("\r[INFO] The altazi_value is: altangle: %f\t azimuths: %f\t\n", altazi_value.altangles, altazi_value.azimuths);
 	
+	/* elevation angle is less that zero */
+	if (altazi_value.altangles < 0)
+	{
+		altazi_value.altangles = -(altazi_value.altangles);
+		str_sun_ea[27] = 0x2D;	/* - */
+	}
+	else
+	{
+		str_sun_ea[27] = 0x2B;	/* + */
+	}
 	/* set the elevation angle,eg:180.88 */
 	temp_ea = (uint32_t)(altazi_value.altangles * 100.0F);
-	str_sun_ea[27] = temp_ea / 10000 + 0x30;
-	temp = temp_ea % 10000;
-	str_sun_ea[28] = temp / 1000 + 0x30;
-	temp = temp % 1000;
+	str_sun_ea[28] = temp_ea / 1000 + 0x30;
+	temp = temp_ea % 1000;
 	str_sun_ea[29] = temp / 100 + 0x30;
 	temp = temp % 100;
 	str_sun_ea[31] = temp / 10 + 0x30;
@@ -480,14 +491,27 @@ void UserApplication_Task(void *pvParameters)
 
 		/* BUG: must update the LCD display title */
 		lcd_update_title();
-		vTaskDelay(pdMS_TO_TICKS(500));	/* must set */
-		lcd_uart_tx_str(draw_line);
-		vTaskDelay(pdMS_TO_TICKS(500));	/* must set */
+		vTaskDelay(pdMS_TO_TICKS(500));	    /* must set */
+		
+		lcd_uart_tx_str(draw_lineup);
+		vTaskDelay(pdMS_TO_TICKS(500));		/* must set */
+		
+		lcd_uart_tx_str(draw_linedown);
+		vTaskDelay(pdMS_TO_TICKS(500));		/* must set */
+		
 		lcd_uart_tx_str(map_dis);
-		vTaskDelay(pdMS_TO_TICKS(500));	/* must set */
+		vTaskDelay(pdMS_TO_TICKS(500));		/* must set */
+	
 		lcd_update_sun_ea();
 		vTaskDelay(pdMS_TO_TICKS(500)); 	/* must set */
+
+		if (Art_Sunshine_Info.lte_status == offline)
+			lcd_uart_tx_str(lteonline);
+		vTaskDelay(pdMS_TO_TICKS(500)); 	/* must set */
+		
+		/* Calculater the sunrise and sunset */
 		CalSUNRiseSet_Time();
+		
 		/* moniter the second interrupt */
 		vTaskDelay(pdMS_TO_TICKS(2000));
 	}

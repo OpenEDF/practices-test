@@ -93,10 +93,7 @@ typedef struct {
 
 #define UART485_QUEUE_DEPTH	  1					/* queue depth */
 #define CLEAR_FLAG_TIME		  (10 * 60 * 1000)	/* EXECPTION MODE flag clear delay  */
-#define SENSOR_SAMP_FRE		  (1 * 1000)		/* sensor sample intervale time */
-
-
-
+#define SENSOR_SAMP_FRE		  (3 * 1000)		/* sensor sample intervale time */
 
 /* Exported constants --------------------------------------------------------*/
 extern Sensor_Str wind_device;		/* global variable */

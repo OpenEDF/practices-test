@@ -72,7 +72,7 @@ extern SYSTEM_INFORMATION Art_Sunshine_Info; /* system information global variab
 
 /* Exported macro ------------------------------------------------------------*/
 #define YSYTEM_RESTART_TIMES	5			/* system restart times */
-#define LTE_WAIT_SECOND			3			/* Wait second times, must than 12, test used 5 */
+#define LTE_WAIT_SECOND			12			/* Wait second times, must than 12, test used 5 */
 
 /* Exported functions --------------------------------------------------------*/
 void System_Init(void);
