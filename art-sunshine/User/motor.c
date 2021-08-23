@@ -774,13 +774,17 @@ void system_motor_self_checking(void)
 {
 	motor_operation_t *motor_t = NULL;
 	motor_type_m index;
-	float32_t angle = 180.00f;
+	float32_t angle = 5.00f;
 
 	/* calculater the pluse counter */
 	for (index = POINTER_A_MOTOR; index < POINTER_MAX_MOTOR; index++)
 	{
 		motor_t = &motor_opr[index];
-		control_motor_run(motor_t, &angle, MOTOR_DIR_POSITIVER);	
+		motor_t->motor_work = MOTOR_WORK_OK;
+		control_motor_run(motor_t, &angle, MOTOR_DIR_POSITIVER);
+		
+		/* stop only test */
+		motor_t->motor_work = MOTOR_WORK_ERROR;
 	}
 }
 
@@ -792,8 +796,13 @@ void system_motor_self_checking(void)
   */
 void motor_self_checking(motor_operation_t *motor_t)
 {
-	float32_t angle = 180.00f;
+	float32_t angle = 5.00f;
+	
+	motor_t->motor_work = MOTOR_WORK_OK;
 	control_motor_run(motor_t, &angle, MOTOR_DIR_POSITIVER);	
+
+	/* stop only test */
+	motor_t->motor_work = MOTOR_WORK_ERROR;
 }
 
 
@@ -866,12 +875,14 @@ void motor_test(void)
 {
 	motor_operation_t *motor_t = NULL;
 	motor_type_m index;
-	float32_t angle = 1.82f;
+	float32_t angle = 10.0f;
 
 	/* calculater the pluse counter */
 	for (index = POINTER_A_MOTOR; index < POINTER_MAX_MOTOR; index++)
 	{
 		motor_t = &motor_opr[index];
+		if (motor_t->motor_work != MOTOR_WORK_OK)
+			motor_t->motor_work = MOTOR_WORK_OK;
 		control_motor_run(motor_t, &angle, MOTOR_DIR_POSITIVER);	
 	}
 }

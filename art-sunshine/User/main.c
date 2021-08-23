@@ -54,9 +54,9 @@
 
 /* Task Priority */
 #define SUNSHINESTART_TASK_PRIORITY		    1
-#define SUNSHINECONTROL_TASK_PRIORITY		6
+#define SUNSHINECONTROL_TASK_PRIORITY		4
 #define USARTSEND_TASK_PRIORITY		    	2
-#define SUNREADWINDSPPED_TASK_PRIORITY		4
+#define SUNREADWINDSPPED_TASK_PRIORITY		6
 #define LTERECEIVER_TASK_PRIORITY			5
 #define USERAPPLICATION_TASK_PRIORITY	    3
 
@@ -86,7 +86,7 @@ int main(void)
 {
 	/* system init */
 	System_Init();
-	//Wait_LTEStartUp(LTE_WAIT_SECOND);
+	Wait_LTEStartUp(LTE_WAIT_SECOND);
 
 	/* Config and Enable the Watchdog */
 	IWDG_Config(IWDG_TIMEOUT_1S);
@@ -94,7 +94,7 @@ int main(void)
 	/* wait the motor A B C D find the 0 */
 	PDEBUG("\r[OK] The motor A B C D run the 0 location.\n");
 	system_motor_self_checking();
-
+	
 	/* create the system start task */
 	xTaskCreate(SunshineStart_Task, "SunshineStart_Task", SUNSHINESTART_TASK_RAM, NULL, SUNSHINESTART_TASK_PRIORITY, &vStartTaskHandler);
 	

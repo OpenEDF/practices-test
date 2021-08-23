@@ -255,18 +255,18 @@ void System_RTC_Init(void)
 	/* RTC basic struct Initalization */
 	RTC_Config_Init();
 
-	/* Set the time and date 2021/08/14 13:00:00  */
+	/* Set the time and date 2021/08/14 13:00:00  */   /* don't set.defaut 2000/01/01 */
 	//initdate.rtc_date.date_year = 0x07E5;  /* 2021 = 2000 + 21 */
-	initdate.rtc_date.date_year = 0x15;
-	initdate.rtc_date.date_month = 0x08;
-	initdate.rtc_date.date_day = 0x0E;
-	initdate.rtc_date.date_weekday = 6;
-	initdate.rtc_time.time_hours = 0x0D;
-	initdate.rtc_time.time_minutes = 0x00;
-	initdate.rtc_time.time_seconds = 0x00;
-	RTC_TimeAndDate_Set(&initdate);
+	//initdate.rtc_date.date_year = 0x15;
+	//initdate.rtc_date.date_month = 0x08;
+	//initdate.rtc_date.date_day = 0x0E;
+	//initdate.rtc_date.date_weekday = 6;
+	//initdate.rtc_time.time_hours = 0x0D;
+	//initdate.rtc_time.time_minutes = 0x00;
+	//initdate.rtc_time.time_seconds = 0x00;
+	//RTC_TimeAndDate_Set(&initdate);		/* don't set time */
 
-	PDEBUG("\r[OK] Set the Init time is: %d/%02d/%02d %02d:%02d:%02d\n", initdate.rtc_date.date_year, initdate.rtc_date.date_month, \
+	PDEBUG("\r[OK] Set the Init time is: %02d/%02d/%02d %02d:%02d:%02d\n", initdate.rtc_date.date_year, initdate.rtc_date.date_month, \
 		initdate.rtc_date.date_day, initdate.rtc_time.time_hours, initdate.rtc_time.time_minutes, \
 		initdate.rtc_time.time_seconds);
 

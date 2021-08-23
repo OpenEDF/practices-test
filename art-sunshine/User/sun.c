@@ -41,6 +41,8 @@
 
 /* Private macro -------------------------------------------------------------*/
 #define MOTOR_ALL_WORK_OK 0x0F	/* 0000DCBA */
+//#define MOTOR_ALL_WORK_OK 0x01	/* 0000DCBA */
+
 /* Private variables ---------------------------------------------------------*/
 
 /* Private function prototypes -----------------------------------------------*/
@@ -187,15 +189,15 @@ void SunshineControl_Task(void *pvParameters)
 	uint32_t curtime_second;
 	uint8_t motor_state = 0x00; 
 	motor_operation_t *motor_t;
-	vTaskDelay(pdMS_TO_TICKS(5000));	/* wait the motor selt chech finish */
+	uint8_t control_flag = 0x00;
+	vTaskDelay(pdMS_TO_TICKS(2000));	/* wait the motor selt chech finish */
 	
 	while(TRUE)
 	{
 		PDEBUG("\rSunshineControl_Task is Runing.\n");
-
 		/* get the system motor status */
 		motor_state = get_system_motor_check_state();
-		if (motor_state == MOTOR_ALL_WORK_OK)
+		if ((motor_state == MOTOR_ALL_WORK_OK) && (Art_Sunshine_Info.lte_status == online))
 		{
 			/* get the current time */
 			curtime = RTC_TimeAndDate_Get();
@@ -222,17 +224,24 @@ void SunshineControl_Task(void *pvParameters)
 				break;
 			}
 		}
-		else /* set the motor seft checking */
+		else if (motor_state != MOTOR_ALL_WORK_OK) /* set the motor seft checking */
 		{
 			for (uint8_t index = 0; index < POINTER_MAX_MOTOR; index++)
 			{
+				/* control no used motor */
 				motor_t = &motor_opr[index];
-				if ((motor_state >> index) & 0x01)
+				control_flag = (motor_state >> index) & 0x01;
+				if (control_flag != 0x01)
 				{
 					motor_self_checking(motor_t);
 				}
 			}
 		}
+		else
+		{
+			vTaskDelay(pdMS_TO_TICKS(500));
+		}
+		
 		vTaskDelay(pdMS_TO_TICKS(Art_Sunshine_Info.control_interval));
 	}
 }
