@@ -14,12 +14,12 @@ typedef int (* PDEBUG)(fmt, args...);
 /*
  *    Original SP  ----> 
  * 4-Byte aligned		 xPSR
- * 						 Return Address
- * 						 LR
- * 						 R12
- * 						 R3
- * 						 R2
- * 						 R1
+ * 				 Return Address
+ * 				 LR
+ * 				 R12
+ * 				 R3
+ * 				 R2
+ * 				 R1
  * 	  New SP  	 ---->	 R0
  * */
 
