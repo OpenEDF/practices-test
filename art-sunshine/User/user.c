@@ -96,6 +96,7 @@ void System_Init(void)
 	/* LCD Init */
 	LCD_DefaultShow();
 	PDEBUG("\r[OK] System LCD Initalized.\n");
+	
 	/* Basic Timer config */
 	TIM6_Configuration();
 	TIM2_Configuration();
@@ -116,6 +117,10 @@ void System_Init(void)
 	/* system BEEP Init */
 	System_Beep_Init();
 	PDEBUG("\r[OK] System BEEP Initalized.\n");
+
+	/* system motor a b c d lock state init */
+	System_Motor_Lock_Init();
+	PDEBUG("\r[OK] System Motor Lock Initalized.\n");
 
 	/* system KEY Init */
 	EXTI_KEY_Config();

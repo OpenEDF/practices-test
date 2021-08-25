@@ -58,8 +58,14 @@
 #define COMMUN_STATUS_LED      GPIO_Pin_6   	/* D3 GPIO Pin is  GPIO_Pin_6 */
 #define COMMUN_STATUS_LED_PORT GPIOE			/* D3 GPIO Pin is  GPIOE */
 
-#define SYSTEM_WARN_BEEP_PIN   GPIO_Pin_10		/* Beep GPIO Port */
-#define SYSTEM_WARN_BEEP_PORT  GPIOI			/* Beep GPIO Pin */
+#define SYSTEM_WARN_BEEP_PIN   GPIO_Pin_10		/* Beep GPIO Pin */
+#define SYSTEM_WARN_BEEP_PORT  GPIOI			/* Beep GPIO Port */
+
+#define SYSTEM_MOTOR_AB_LOCK_PIN  	GPIO_Pin_15		/* Motor AB Lock GPIO Port */
+#define SYSTEM_MOTOR_AB_LOCK_PORT  	GPIOF			/* Motor AB Lock GPIO Pin */
+
+#define SYSTEM_MOTOR_CD_LOCK_PIN  	GPIO_Pin_14		/* Motor CD Lock GPIO Port */
+#define SYSTEM_MOTOR_CD_LOCK_PORT  	GPIOF			/* Motor CD Lock GPIO Pin */
 
 /* 
  * macro: @system control LED Status.
@@ -87,14 +93,25 @@
  */
 #define WARN_BEEP_ON()			GPIO_SetBits(SYSTEM_WARN_BEEP_PORT, SYSTEM_WARN_BEEP_PIN)
 #define WARN_BEEP_OFF()			GPIO_ResetBits(SYSTEM_WARN_BEEP_PORT, SYSTEM_WARN_BEEP_PIN)
-#define WARN_BEEP_TOGGLE()	GPIO_ToggleBits(SYSTEM_WARN_BEEP_PORT, SYSTEM_WARN_BEEP_PIN)
+#define WARN_BEEP_TOGGLE()		GPIO_ToggleBits(SYSTEM_WARN_BEEP_PORT, SYSTEM_WARN_BEEP_PIN)
 
+/* 
+ * macro: @System Motor AB and CD Lock control.
+ */
+#define SYSTEM_MOTOR_AB_LOCK_ON()			GPIO_SetBits(SYSTEM_MOTOR_AB_LOCK_PORT, SYSTEM_MOTOR_AB_LOCK_PIN)
+#define SYSTEM_MOTOR_AB_LOCK_OFF()			GPIO_ResetBits(SYSTEM_MOTOR_AB_LOCK_PORT, SYSTEM_MOTOR_AB_LOCK_PIN)
+#define SYSTEM_MOTOR_AB_LOCK_OFFTOGGLE()	GPIO_ToggleBits(SYSTEM_MOTOR_AB_LOCK_PORT, SYSTEM_MOTOR_AB_LOCK_PIN)
+
+#define SYSTEM_MOTOR_CD_LOCK_ON()			GPIO_SetBits(SYSTEM_MOTOR_CD_LOCK_PORT, SYSTEM_MOTOR_CD_LOCK_PIN)
+#define SYSTEM_MOTOR_CD_LOCK_OFF()			GPIO_ResetBits(SYSTEM_MOTOR_CD_LOCK_PORT, SYSTEM_MOTOR_CD_LOCK_PIN)
+#define SYSTEM_MOTOR_CD_LOCK_OFFTOGGLE()	GPIO_ToggleBits(SYSTEM_MOTOR_CD_LOCK_PORT, SYSTEM_MOTOR_CD_LOCK_PIN)
 
 /* Exported functions --------------------------------------------------------*/
 void Config_GPIO_OUT(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
 void Config_GPIO_IN(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
 void System_LED_Init(void);
 void System_Beep_Init(void);
+void System_Motor_Lock_Init(void);
 void System_Status_Show(System_Mode mode);
 
 #ifdef __cplusplus
