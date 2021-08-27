@@ -1,0 +1,33 @@
+macro@macro-ubuntu:~/microjson-1.6$ ./hotmap '{"data":{"user":{"contributionsCollection":{"contributionCalendar":{"weeks":[{"contributionDays":[{"color":"#40c463","date":"2021-08-15","contributionCount":2},{"color":"#9be9a8","date":"2021-08-16","contributionCount":1},{"color":"#216e39","date":"2021-08-17","contributionCount":4},{"color":"#30a14e","date":"2021-08-18","contributionCount":3},{"color":"#216e39","date":"2021-08-19","contributionCount":5},{"color":"#216e39","date":"2021-08-20","contributionCount":5},{"color":"#40c463","date":"2021-08-21","contributionCount":2}]}]}}}}}'
+1: {"contributionDays":[{"color":"#40c463","date":"2021-08-15","contributionCount":2},{"color":"#9be9a8","date":"2021-08-16","contributionCount":1},{"color":"#216e39","date":"2021-08-17","contributionCount":4},{"color":"#30a14e","date":"2021-08-18","contributionCount":3},{"color":"#216e39","date":"2021-08-19","contributionCount":5},{"color":"#216e39","date":"2021-08-20","contributionCount":5},{"color":"#40c463","date":"2021-08-21","contributionCount":2}]}]}}}}}
+2: {"contributionDays":[{"color":"#40c463","date":"2021-08-15","contributionCount":2},{"color":"#9be9a8","date":"2021-08-16","contributionCount":1},{"color":"#216e39","date":"2021-08-17","contributionCount":4},{"color":"#30a14e","date":"2021-08-18","contributionCount":3},{"color":"#216e39","date":"2021-08-19","contributionCount":5},{"color":"#216e39","date":"2021-08-20","contributionCount":5},{"color":"#40c463","date":"2021-08-21","contributionCount":2}]}]
+ Object:             0
+  color:             #40c463
+  date:              2021-08-15
+  contributionCount: 2
+ Object:             1
+  color:             #9be9a8
+  date:              2021-08-16
+  contributionCount: 1
+ Object:             2
+  color:             #216e39
+  date:              2021-08-17
+  contributionCount: 4
+ Object:             3
+  color:             #30a14e
+  date:              2021-08-18
+  contributionCount: 3
+ Object:             4
+  color:             #216e39
+  date:              2021-08-19
+  contributionCount: 5
+ Object:             5
+  color:             #216e39
+  date:              2021-08-20
+  contributionCount: 5
+ Object:             6
+  color:             #40c463
+  date:              2021-08-21
+  contributionCount: 2
+macro@macro-ubuntu:~/microjson-1.6$
+
