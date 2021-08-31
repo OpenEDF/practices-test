@@ -140,6 +140,25 @@ void System_Beep_Init(void)
 	WARN_BEEP_OFF();
 }
 
+/**
+  * @function   System_Beep_Init
+  * @brief      Configurate the system Beep Pin.
+  * @param[in]  None.
+  * @retval     None.
+  */
+void System_Motor_Lock_Init(void)
+{
+	/* enable the GPIO Port Clock */
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);
+
+	/* configure the AB and CD lock pin */
+	Config_GPIO_OUT(SYSTEM_MOTOR_AB_LOCK_PORT, SYSTEM_MOTOR_AB_LOCK_PIN);
+	Config_GPIO_OUT(SYSTEM_MOTOR_CD_LOCK_PORT, SYSTEM_MOTOR_CD_LOCK_PIN);
+	
+	/* set the init status */
+	SYSTEM_MOTOR_AB_LOCK_OFF();
+	SYSTEM_MOTOR_CD_LOCK_OFF();
+}
 
 /**
   * @function   System_Status_Show
