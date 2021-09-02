@@ -21,6 +21,8 @@ HAWK_REP='ssh://yang.zhixiong@192.168.100.51:29419/hawk_open_core.git'
 
 # system-c support
 SYSTEMC_HOME=/usr/local/systemc233
+SYSTEMC_INCLUDE=$SYSTEMC_HOME/include
+SYSTEMC_LIBDIR=$SYSTEMC_HOME/lib-linux64
 
-# verilator suport
-VERILATOR_SRC=/usr/share/verilator/include
+# query the weather
+curl https://wttr.in/shanghai-pudong
