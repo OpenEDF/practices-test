@@ -6,7 +6,7 @@ JedecChain;
 	P ActionCode(Ign)
 		Device PartName(10AX115N3) MfrSpec(OpMask(0));
 	P ActionCode(Ign)
-		Device PartName(5M2210Z) MfrSpec(OpMask(0) SEC_Device(CFI_512MB) Child_OpMask(3 1 1 1) PFLPath("hawk_top.pof"));
+		Device PartName(5M2210Z) MfrSpec(OpMask(0) SEC_Device(CFI_512MB) Child_OpMask(3 1 1 1) PFLPath("ready_pof_file.pof"));
 
 ChainEnd;
 
