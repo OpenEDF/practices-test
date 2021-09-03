@@ -5,6 +5,8 @@ COMMAND='quartus_pgm -c 1 --mode=JTAG'
 POF_CMD="$COMMAND quartus_a10_pof.cdf"
 SOF_CMD="$COMMAND quartus_a10_sof.cdf"
 
+# check the env var
+
 # check the usb connect
 
 # check file and modify the file name
