@@ -1,25 +1,50 @@
 #!/bin/bash
 ARGS=$1
-COMMAND='quartus_pgm -c 1 --mode=JTAG'
+LOAD_COMMAND='quartus_pgm -c 1 --mode=JTAG'
+CHECK_USB=$(lsusb | grep "Altera Blaster")
 
-POF_CMD="$COMMAND quartus_a10_pof.cdf"
-SOF_CMD="$COMMAND quartus_a10_sof.cdf"
-
-# check the env var
+POF_CMD="$LOAD_COMMAND quartus_a10_pof.cdf"
+SOF_CMD="$LOAD_COMMAND quartus_a10_sof.cdf"
 
 # check the usb connect
-
-# check file and modify the file name
+if [[ $CHECK_USB == "" ]]
+then
+    echo "[ERROR] Please connect the development board to your computer and check usb driver."
+    exit
+else
+    echo "[OK] An available USB device was found: $CHECK_USB."
+fi
 
 # check the pof and sof file and progarmming
 if [[ $ARGS == 'pof' ]]
 then
-    echo 1111
-    $POF_CMD
+    if [[ -e hawk_top.pof ]]
+    then
+        echo "[OK] Find the .pof file."
+        echo "load image file to flash........"
+        $POF_CMD
+    else
+        echo "[ERROR] No available .pof files were found."
+        exit
+    fi
 elif [[ $ARGS == 'sof' ]] 
 then
-    echo 222222222
-    $SOF_CMD
+    if [[ -e hawk_top.sof ]]
+    then
+        echo "[OK] Find the .sof file."
+        echo "load image sof file to ram........"
+        $SOF_CMD
+    else
+        echo "[ERROR] No available .sof files were found."
+        exit
+    fi
 else
-    echo 33333333
+    echo [INFO] "Please enter the correct command format."
+    echo [INFO] $ "./loadimage.sh sof/pof"
+    exit
 fi
+
+# finish
+echo [INFO] "Operation Finish."
+
+# ############################## END ##################################
