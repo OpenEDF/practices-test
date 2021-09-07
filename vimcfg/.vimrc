@@ -108,11 +108,11 @@ let g:ycm_sever_python_interpreter='/usr/bin/python'
 let g:ycm_global_ycm_extra_conf='~/.vim/.ycm_extra_conf.py'
 
 set number
-set cindent
-set tabstop=4
 set autoindent
+set cindent
+set tabstop=1
+set smarttab
 set expandtab
-set softtabstop=4
 set tags=/home/macro/linux-5.10.10/tags
 syntax enable
 syntax on
@@ -127,3 +127,4 @@ set laststatus=2
 set history=1000
 set cursorline
 autocmd InsertEnter * se cul
+set softtabstop=4
