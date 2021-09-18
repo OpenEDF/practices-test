@@ -107,6 +107,9 @@ Plugin 'Valloric/YouCompleteMe'
 let g:ycm_sever_python_interpreter='/usr/bin/python'
 let g:ycm_global_ycm_extra_conf='~/.vim/.ycm_extra_conf.py'
 
+"verilog-mode
+Plugin 'zhuzhzh/verilog_emacsauto.vim'
+
 set number
 set cindent
 set tabstop=4
