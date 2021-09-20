@@ -44,6 +44,6 @@ gcc -fudump-tree-all-graph target.c
 ```shell
 dot -Tpng target.c.011t.cfg.dot -o target.png
 ```
-![target.png]()
+![target.png](https://github.com/OpenEDF/practices-test/blob/main/gcc-graphviz/target.png)
 
 
