@@ -1,0 +1,34 @@
+# Sconstruct
+import time
+import os
+
+def scons_py_build(target, source, env):
+    # 1. read the time
+    localtime = time.asctime(time.localtime(time.time()))
+    localtime = "/* Time & Date: " + localtime + " */ \n"
+
+    lines = []
+    lines.append(localtime)
+    string = "/* Hello World! */\n"
+
+    # 2. open the file
+    for f in source:
+        file1 = open(str(f), "a")
+
+        # 3. write file
+        file1.write(string)
+        file1.writelines(lines)
+
+        # 4. close file
+        file1.close()
+    
+    return None
+
+testbld = Builder(action = scons_py_build,
+                  #suffix = '.h',
+                  src_suffix = '.h')
+src = []
+src.append(Glob(os.path.join('*.h')))
+env = Environment(BUILDERS = {'FOO' : testbld})
+
+env.FOO(source = src)
