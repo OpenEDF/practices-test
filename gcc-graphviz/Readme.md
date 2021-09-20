@@ -35,12 +35,12 @@ int main(int argc, char *argv[])
     return 0;
 }
 ```
-### 4.Gernerate .dot file using gcc
+### 4. Gernerate .dot file using gcc
 ```shell
 gcc -fudump-tree-all-graph target.c
 ```
 
-### 5.Process .dot file using Graphviz
+### 5. Process .dot file using Graphviz
 ```shell
 dot -Tpng target.c.011t.cfg.dot -o target.png
 ```
