@@ -26,3 +26,6 @@ SYSTEMC_LIBDIR=$SYSTEMC_HOME/lib-linux64
 
 # query the weather
 curl https://wttr.in/shanghai-pudong
+
+# gio open view pdf document
+alias openpdf="gio open"
