@@ -54,5 +54,9 @@ dkms.conf
 # build
 build/
 
-#scons
+# scons
 *.dblite
+
+# verdi
+verdiLog
+
