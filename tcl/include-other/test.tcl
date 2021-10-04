@@ -12,5 +12,5 @@ proc printstr {} {
 
 # the test variable
 set test_var 1
-
+puts "The test_var variable is in test.tcl: $test_var"
 ### ------------------------------------------------------------------
