@@ -13,3 +13,6 @@ start vmware -x %UBUNTU%
 
 :: start mobaxterm
 start MobaXterm
+
+:: end computer
+:: shutdown -s
