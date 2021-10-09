@@ -1,6 +1,6 @@
 :: power on the ubuntu 
 set UBUNTU="D:\Ubuntu2004\Ubuntu2004.vmx"
-:: vmrun start %UBUNTU% nogui
+::start vmrun start %UBUNTU% nogui
 
 :: power off the ubuntu 
 ::vmrun stop %UBUNTU% nogui
@@ -9,7 +9,7 @@ set UBUNTU="D:\Ubuntu2004\Ubuntu2004.vmx"
 ::vmrun list
 
 :: start visual machine use vmware
-vmware -x %UBUNTU%
+start vmware -x %UBUNTU%
 
 :: start mobaxterm
-:: MobaXterm &
+start MobaXterm
