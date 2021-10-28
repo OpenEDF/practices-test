@@ -1,8 +1,6 @@
-#include <stdio.h>  
-   
-   
-int main  
+#include <stdio.h>
+
+int main
 {
-    
-       i =3;
+    i =3;
 }
