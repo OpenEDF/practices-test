@@ -120,7 +120,7 @@ fi
 alias espenv='. $HOME/esp/esp-idf/export.sh'
 alias python='python3'
 
-# set the user command
+# set the user command 
 alias ..="cd .."
 alias ..2="cd ../.."
 alias ..3="cd ../../.."
@@ -133,7 +133,7 @@ PATH=/opt/riscv/bin:$PATH
 # gio open view pdf document
 alias openpdf="gio open"
 
-# VSC + VERDI + SCL + SPYGLASS + DC
+# VSC + VERDI + SCL + SPYGLASS + DC + SYN
 export DVE_HOME=/home/macro/synopsys/vcs_2018/vcs/O-2018.09-SP2
 export VCS_HOME=/home/macro/synopsys/vcs_2018/vcs/O-2018.09-SP2
 export LD_LIBRARY_PATH=/home/macro/synopsys/verdi_2018/verdi/Verdi_O-2018.09-SP2/share/PLI/VCS/LINUX64
@@ -141,6 +141,9 @@ export VERDI_HOME=/home/macro/synopsys/verdi_2018/verdi/Verdi_O-2018.09-SP2
 export SCL_HOME=/home/macro/synopsys/scl_2018/scl/2018.06
 export SPYGLASS_HOME=/home/macro/synopsys/spyglass_2016/SpyGlass-L2016.06/SPYGLASS_HOME
 export DC_HOME=/home/macro/synopsys/dc_2016/syn/L-2016.03-SP1/
+export SYN_HOME=/home/macro/synopsys/syn_2018/syn/O-2018.06-SP1/
+export DESIGNWARE_HOME=/home/macro/synopsys/vc_vip_2018/
+
 # DVE
 PATH=$PATH:$VCS_HOME/gui/dve/bin
 alias dve='dve -full64'
@@ -165,6 +168,9 @@ alias spy='spyglass'
 PATH=$PATH:$DC_HOME/bin
 alias dc='dc_shell'
 alias dv='design_vision'
+
+#SYN
+#PATH=$PATH:$SYN_HOME/bin
 
 # LICENCE
 export LM_LICENSE_FILE=27000@macro-ubuntu
