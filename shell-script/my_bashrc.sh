@@ -143,6 +143,9 @@ export SPYGLASS_HOME=/home/macro/synopsys/spyglass_2016/SpyGlass-L2016.06/SPYGLA
 export DC_HOME=/home/macro/synopsys/dc_2016/syn/L-2016.03-SP1/
 export SYN_HOME=/home/macro/synopsys/syn_2018/syn/O-2018.06-SP1/
 export DESIGNWARE_HOME=/home/macro/synopsys/vc_vip_2018/
+export PT_HOME=/home/macro/synopsys/pt_2018/pts/O-2018.06-SP1/
+export FM_HOME=/home/macro/synopsys/fm_2018/fm/O-2018.06-SP1/
+#export ICC2_HOME=/home/macro/synopsys/icc2_2018/icc2/O-2018.0/
 
 # DVE
 PATH=$PATH:$VCS_HOME/gui/dve/bin
@@ -171,6 +174,18 @@ alias dv='design_vision'
 
 #SYN
 #PATH=$PATH:$SYN_HOME/bin
+
+#PT
+PATH=$PATH:$PT_HOME/bin
+alias pt='primetime'
+
+#FM
+PATH=$PATH:$FM_HOME/bin
+alias fm='formality'
+
+#ICC2
+#PATH=$PATH:$ICC2_HOME/bin
+#alias icc='icc2_shell'
 
 # LICENCE
 export LM_LICENSE_FILE=27000@macro-ubuntu
