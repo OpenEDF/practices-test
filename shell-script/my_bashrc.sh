@@ -145,7 +145,7 @@ export SYN_HOME=/home/macro/synopsys/syn_2018/syn/O-2018.06-SP1/
 export DESIGNWARE_HOME=/home/macro/synopsys/vc_vip_2018/
 export PT_HOME=/home/macro/synopsys/pt_2018/pts/O-2018.06-SP1/
 export FM_HOME=/home/macro/synopsys/fm_2018/fm/O-2018.06-SP1/
-#export ICC2_HOME=/home/macro/synopsys/icc2_2018/icc2/O-2018.0/
+export ICC_HOME=/home/macro/synopsys/icc_2018/icc/O-2018.06-SP1/
 
 # DVE
 PATH=$PATH:$VCS_HOME/gui/dve/bin
@@ -184,8 +184,8 @@ PATH=$PATH:$FM_HOME/bin
 alias fm='formality'
 
 #ICC2
-#PATH=$PATH:$ICC2_HOME/bin
-#alias icc='icc2_shell'
+PATH=$PATH:$ICC_HOME/bin
+alias icc='icc_shell'
 
 # LICENCE
 export LM_LICENSE_FILE=27000@macro-ubuntu
