@@ -5,3 +5,4 @@
 
 ## TODO:
  - [ ] RSIC-V FPGA 
+ - [ ] add the example for make
