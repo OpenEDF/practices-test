@@ -1,7 +1,7 @@
 ## practices-test
  - practices and test
  - add riscv asm file test. 
- - read book
+ - read book digital design system
 
 ## TODO:
  - [ ] RSIC-V FPGA 
