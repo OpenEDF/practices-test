@@ -194,6 +194,17 @@ alias lmg_synopsys='lmgrd -c /home/macro/synopsys/scl_2018/scl/2018.06/admin/lic
 # Vivado
 #source xilinx/Vivado/2019.2/settings64.sh
 
+#Mentor calibre
+#export MGC_HOME=/home/macro/mentor/calibre_2020/aoj_cal_2020.3_16.11
+#PATH=$PATH:$MGC_HOME/bin
+#PATH=$PATH:$MGC_HOME/lib
+#export MGLS_LICENSE_FILE=/home/macro/mentor/calibre_2020/license/license.dat
+
+# UVM LIB
+export UVM_1_2_HOME=/home/macro/synopsys/uvm_lib/uvm-1.2
+export UVM_1800_2_2020_v_1_1_HOME=/home/macro/synopsys/uvm_lib/1800.2-2020-1.1
+export UVM_HOME=/home/macro/synopsys/uvm_lib/uvm-1.2
+
 # Colors
 NOCOLOR='\033[0m'
 RED='\033[0;31m'
