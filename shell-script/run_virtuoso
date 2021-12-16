@@ -381,12 +381,12 @@ export CDK_DIR=/opt/PDKs/ncsu-cdk-1.6.0.beta
 # be integrated into Virtuoso menu bar.
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
-export MGC_HOME=/home/macro/mentor
-export CALIBRE_HOME=$MGC_HOME/Calibre2015/aoi_cal_2015.2_36.27
-export MGLS_LICENSE_FILE=$MGC_HOME/license/license.dat
-export MGC_LICENSE_FILE=$MGC_HOME/license/license.dat
-export PATH=$PATH:$CALIBRE_HOME/bin
-export MGC_LIB_PATH=$CALIBRE_HOME/lib
+#export MGC_HOME=/home/macro/mentor
+#export CALIBRE_HOME=$MGC_HOME/Calibre2015/aoi_cal_2015.2_36.27
+#export MGLS_LICENSE_FILE=$MGC_HOME/license/license.dat
+#export MGC_LICENSE_FILE=$MGC_HOME/license/license.dat
+#export PATH=$PATH:$CALIBRE_HOME/bin
+#export MGC_LIB_PATH=$CALIBRE_HOME/lib
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
