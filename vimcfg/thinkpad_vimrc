@@ -1,0 +1,149 @@
+"Vundle setting"
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+
+" The following are examples of different formats supported.
+" Keep Plugin commands between vundle#begin/end.
+" plugin on GitHub repo
+Plugin 'tpope/vim-fugitive'
+" plugin from http://vim-scripts.org/vim/scripts.html
+" Plugin 'L9'
+" Git plugin not hosted on GitHub
+" TODO:Plugin 'git://git.wincent.com/command-t.git'"
+" git repos on your local machine (i.e. when working on your own plugin)
+" TODO:Plugin 'file:///home/gmarik/path/to/plugin'"
+" The sparkup vim script is in a subdirectory of this repo called vim.
+" Pass the path to set the runtimepath properly.
+Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+" Install L9 and avoid a Naming conflict if you've already installed a
+" different version somewhere else.
+" Plugin 'ascenator/L9', {'name': 'newL9'}
+
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
+"
+" Brief help
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+"
+" see :h vundle for more details or wiki for FAQ
+" Put your non-Plugin stuff after this line
+Plugin 'majutsushi/tagbar' "Tag bar"
+let g:tagbar_width=25
+autocmd BufReadPost *.c,*.cpp,*.h,*.cc,*.cxx call tagbar#autoopen()
+
+
+Plugin 'scrooloose/nerdtree'
+" NetRedTree
+" Start NERDTree and leave the cursor in it.
+autocmd VimEnter * NERDTree
+" Start NERDTree when Vim is started without file arguments.
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+let NERDTreeWinSize=25
+let NERDTreeShowLineNumbers=1
+let NERDTreeAutoCenter=1
+let NERDTreeShowBookmarks=1
+let g:NERDTreeDirArrowExpandable = '▸'
+let g:NERDTreeDirArrowCollapsible = '▾'
+
+"Plugin 'wOrp/ale'
+Plugin 'dense-analysis/ale'
+let g:ale_sign_column_always = 1
+let g:ale_sign_error = '>>'
+let g:ale_sign_warning = '--'
+let g:ale_echo_msg_error_str = 'E'
+let g:ale_echo_msg_warning_str = 'W'
+let g:ale_statusline_format = ['x %d', 'w %d', '√ OK']
+let g:ale_echo_msg_format = '[%linter%] %code: %%s'
+let g:ale_lint_on_text_changed = 'normal'
+let g:ale_lint_on_insert_leave = 1
+let g:ale_c_gcc_options = '-Wall -O2 -std=c99'
+let g:ale_cpp_gcc_options = '-Wall -O2 -std=c++14'
+let g:ale_c_cppcheck_options= ''
+let g:ale_cpp_cppcheck_options= ''
+
+"Cscope
+if has("cscope")
+    set csprg=/usr/bin/cscope
+    set csto=1
+    set cst
+    set nocsverb
+    " add any database om current directory
+    if filereadable("cscope.out")
+        cs add cscope.out
+    endif
+    set csverb
+endif
+"set cscopequickfix=s-,c-,d-,i-,t-,e
+"namp <C-_>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+nmap <silent> <F5> :cs find s <C-R>=expand("<cword>")<CR><CR>
+nmap <silent> <F6> :cs find t <C-R>=expand("<cword>")<CR><CR>
+nmap <silent> <F7> :cs find c <C-R>=expand("<cword>")<CR><CR>
+
+"Lightline
+Plugin 'itchyny/lightline.vim'
+
+"YouCompleteMe
+Plugin 'Valloric/YouCompleteMe'
+let g:ycm_sever_python_interpreter='/usr/bin/python'
+let g:ycm_global_ycm_extra_conf='~/.vim/.ycm_extra_conf.py'
+let g:ycm_key_invoke_completion = '<c-z>'
+let g:ycm_min_num_identifier_candidate_chars = 2
+let g:ycm_semantic_triggers =  {
+			\ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
+			\ 'cs,lua,javascript': ['re!\w{2}'],
+			\ }
+let g:ycm_show_diagnostics_ui = 0
+highlight PMenu ctermfg=10 ctermbg=242 guifg=black guibg=darkgrey
+highlight PMenuSel ctermfg=242 ctermbg=8 guifg=darkgrey guibg=black
+let g:ycm_filetype_whitelist = { 
+			\ "c":1,
+			\ "cpp":1, 
+			\ "objc":1,
+			\ "sh":1,
+			\ "zsh":1,
+			\ "zimbu":1,
+			\ "py":1,
+			\ }
+set completeopt=menu,menuone
+let g:ycm_add_preview_to_completeopt = 0
+
+"Verilog-mode
+Plugin 'zhuzhzh/verilog_emacsauto.vim'
+
+"Airline
+Plugin 'vim-airline/vim-airline'
+
+set number
+set cindent
+set tabstop=4
+set expandtab
+" run shell cmd on vimrc
+"let pwdc = systemlist('pwd')
+"let language = system('echo $pwdc')
+set tags=./tags
+syntax enable
+syntax on
+colorscheme desert
+set autowrite
+set hlsearch
+set cursorline
