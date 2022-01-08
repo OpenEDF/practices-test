@@ -222,3 +222,16 @@ LIGHTBLUE='\033[1;34m'
 LIGHTPURPLE='\033[1;35m'
 LIGHTCYAN='\033[1;36m'
 WHITE='\033[1;37m'
+
+# command 'rm -rf *' never to be executed!
+shopt -s extdebug
+checkcommand() {
+    if [[ $BASH_COMMAND = 'rm -rf *' ]]; then
+        echo "[ERROR] The command you have executed is equivalent to ending the life of the computer, we refuse to carry out your command !!!"
+        return 1
+    fi
+        # You can check for other commands here, if you like.
+    return 0
+}
+trap checkcommand DEBUG
+
