@@ -60,3 +60,5 @@ build/
 # verdi
 verdiLog
 
+# swp
+*.swp
