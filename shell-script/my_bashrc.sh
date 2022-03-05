@@ -187,12 +187,15 @@ alias fm='formality'
 PATH=$PATH:$ICC_HOME/bin
 alias icc='icc_shell'
 
+#VIP
+PATH=$PATH:$DESIGNWARE_HOME/bin
+
 # LICENCE
 export LM_LICENSE_FILE=27000@macro-ubuntu
 alias lmg_synopsys='lmgrd -c /home/macro/synopsys/scl_2018/scl/2018.06/admin/license/Synopsys.dat'
 
 # Vivado
-#source xilinx/Vivado/2019.2/settings64.sh
+source xilinx/Vivado/2019.2/settings64.sh
 
 #Mentor calibre
 #export MGC_HOME=/home/macro/mentor/calibre_2020/aoj_cal_2020.3_16.11
@@ -234,4 +237,3 @@ checkcommand() {
     return 0
 }
 trap checkcommand DEBUG
-
