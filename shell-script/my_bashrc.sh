@@ -133,7 +133,7 @@ PATH=/opt/riscv/bin:$PATH
 # gio open view pdf document
 alias openpdf="gio open"
 
-# VSC + VERDI + SCL + SPYGLASS + DC + SYN
+# VSC + VERDI + SCL + SPYGLASS + DC + SYN + SYNPLIFY + IDENTIFY
 export DVE_HOME=/home/macro/synopsys/vcs_2018/vcs/O-2018.09-SP2
 export VCS_HOME=/home/macro/synopsys/vcs_2018/vcs/O-2018.09-SP2
 export LD_LIBRARY_PATH=/home/macro/synopsys/verdi_2018/verdi/Verdi_O-2018.09-SP2/share/PLI/VCS/LINUX64
@@ -146,6 +146,8 @@ export DESIGNWARE_HOME=/home/macro/synopsys/vc_vip_2018/
 export PT_HOME=/home/macro/synopsys/pt_2018/pts/O-2018.06-SP1/
 export FM_HOME=/home/macro/synopsys/fm_2018/fm/O-2018.06-SP1/
 export ICC_HOME=/home/macro/synopsys/icc_2018/icc/O-2018.06-SP1/
+export SYNPLIFY_HOME=/home/macro/synopsys/synplify_pro_2018/fpga/N-2018.03-SP1/
+export IDENTIFY_HOME=/home/macro/synopsys/synplify_pro_2018/identify/N-2018.03-SP1/
 
 # DVE
 PATH=$PATH:$VCS_HOME/gui/dve/bin
@@ -190,12 +192,21 @@ alias icc='icc_shell'
 #VIP
 PATH=$PATH:$DESIGNWARE_HOME/bin
 
+#SYNPLIFY PRO
+PATH=$PATH:$SYNPLIFY_HOME/bin
+alias synplify='synplify_pro'
+
+#IDENTIFY
+PATH=$PATH:$IDENTIFY_HOME/bin
+alias identify='identify_debugger'
+
 # LICENCE
 export LM_LICENSE_FILE=27000@macro-ubuntu
 alias lmg_synopsys='lmgrd -c /home/macro/synopsys/scl_2018/scl/2018.06/admin/license/Synopsys.dat'
 
 # Vivado
-source xilinx/Vivado/2019.2/settings64.sh
+#source xilinx/Vivado/2019.2/settings64.sh
+alias setvivado='source xilinx/Vivado/2019.2/settings64.sh'
 
 #Mentor calibre
 #export MGC_HOME=/home/macro/mentor/calibre_2020/aoj_cal_2020.3_16.11
