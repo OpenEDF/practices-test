@@ -206,7 +206,7 @@ alias lmg_synopsys='lmgrd -c /home/macro/synopsys/scl_2018/scl/2018.06/admin/lic
 
 # Vivado
 #source xilinx/Vivado/2019.2/settings64.sh
-alias setvivado='source xilinx/Vivado/2019.2/settings64.sh'
+alias setvivado='source /home/macro/xilinx/Vivado/2019.2/settings64.sh'
 
 #Mentor calibre
 #export MGC_HOME=/home/macro/mentor/calibre_2020/aoj_cal_2020.3_16.11
