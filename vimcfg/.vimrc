@@ -128,3 +128,4 @@ set history=1000
 set cursorline
 autocmd InsertEnter * se cul
 set softtabstop=4
+set shiftwidth=4
