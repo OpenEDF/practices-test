@@ -248,3 +248,7 @@ checkcommand() {
     return 0
 }
 trap checkcommand DEBUG
+set history-size 1000
+# display timestamp
+export HISTTIMEFORMAT='%F %T '
+export HISTIGNORE="pwd:ls:ls -ltr:top:jobs:history"
