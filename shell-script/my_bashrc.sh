@@ -259,5 +259,5 @@ SYSTEMC_INCLUDE=$SYSTEMC_HOME/include
 SYSTEMC_LIBDIR=$SYSTEMC_HOME/lib-linux64
 
 # alias for git
-alias clone_kiwi='git clone ssh://yang.zhixiong@192.168.100.51:29419/kiwi_soc.git kiwi_soc_$(date +%m%d); cd kiwi_soc_$(date +%m%d); scons app=unit_test_fpga'
+alias clone_kiwi='git clone ssh:git@192.168.100.51:29419/kiwi_soc.git -b branch_name kiwi_soc_$(date +%m%d);  cd kiwi_soc_$(date +%m%d); scons app=unit_test_fpga'
 alias kiwi_push='git push origin HEAD:refs/for/master'
