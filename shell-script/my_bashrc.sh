@@ -148,6 +148,7 @@ export FM_HOME=/home/macro/synopsys/fm_2018/fm/O-2018.06-SP1/
 export ICC_HOME=/home/macro/synopsys/icc_2018/icc/O-2018.06-SP1/
 export SYNPLIFY_HOME=/home/macro/synopsys/synplify_pro_2018/fpga/N-2018.03-SP1/
 export IDENTIFY_HOME=/home/macro/synopsys/synplify_pro_2018/identify/N-2018.03-SP1/
+export LC_HOME=/home/macro/synopsys/lib_com_2018/lc/O-2018.06-SP1/
 
 # DVE
 PATH=$PATH:$VCS_HOME/gui/dve/bin
@@ -176,6 +177,8 @@ alias dv='design_vision'
 
 #SYN
 #PATH=$PATH:$SYN_HOME/bin
+#alias dc='dc_shell'
+#alias dv='design_vision'
 
 #PT
 PATH=$PATH:$PT_HOME/bin
@@ -199,6 +202,10 @@ alias synplify='synplify_pro'
 #IDENTIFY
 PATH=$PATH:$IDENTIFY_HOME/bin
 alias identify='identify_debugger'
+
+#LC
+PATH=$PATH:$LC_HOME/bin
+alias lc='lc_shell'
 
 # LICENCE
 export LM_LICENSE_FILE=27000@macro-ubuntu
@@ -252,12 +259,3 @@ set history-size 1000
 # display timestamp
 export HISTTIMEFORMAT='%F %T '
 export HISTIGNORE="pwd:ls:ls -ltr:top:jobs:history"
-
-# system-c support
-SYSTEMC_HOME=/usr/local/systemc233
-SYSTEMC_INCLUDE=$SYSTEMC_HOME/include
-SYSTEMC_LIBDIR=$SYSTEMC_HOME/lib-linux64
-
-# alias for git
-alias clone_kiwi='git clone ssh:git@192.168.100.51:29419/kiwi_soc.git -b branch_name kiwi_soc_$(date +%m%d);  cd kiwi_soc_$(date +%m%d); scons app=unit_test_fpga'
-alias kiwi_push='git push origin HEAD:refs/for/master'
