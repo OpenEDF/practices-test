@@ -42,4 +42,30 @@ plt.xlabel("Rep")
 plt.ylabel("Item")
 plt.savefig('test.png')
 plt.show()
+
+# Create a dataframe into a list of rows
+list_row = pd_item.to_numpy().tolist()
+print(list_row)
+print(list_row[0])
+
+# Create a dataframe into a list of column
+list_colunm = pd_item.transpose().values.tolist()
+print(list_colunm)
+print(list_colunm[0])
+
+# Get the excel information by pandas
+list_columns_value = pd_item.columns.values
+print(list_columns_value)
+print(pd_item.columns)
+print(pd_item.keys())
+
+# Sort the excel
+pd_sort = pd_item.sort_values(by = 'Jones', ascending=False, kind='mergesort')
+print(pd_sort)
+
+# dataframe append
+pd_append = pd.DataFrame({"XiangHe":[11.11, 22.22, 33.33, 44.44, 55.55]}, index=[0, 1, 2, 3, 4])
+print(pd_append)
+pd_append_new = pd_sort.append(pd_append, sort=True, ignore_index=False)
+print(pd_append_new)
 #----------------------------- END ----------------------------------
