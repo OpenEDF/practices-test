@@ -6,3 +6,4 @@
 ## TODO:
  - [ ] RSIC-V FPGA 
  - [ ] add the example for make
+ - [ ] add cache test example
