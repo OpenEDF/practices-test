@@ -1,0 +1,2 @@
+Import('env')
+print("The test string is:", env['TEST_STRING'])

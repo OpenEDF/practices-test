@@ -1,0 +1,5 @@
+env = Environment()
+env['TEST_STRING'] = 'macro'
+#Export('env')
+
+SConscript('src/Sconstruct', exports = 'env')
