@@ -151,9 +151,9 @@ export IDENTIFY_HOME=/home/macro/synopsys/synplify_pro_2018/identify/N-2018.03-S
 export LC_HOME=/home/macro/synopsys/lib_com_2018/lc/O-2018.06-SP1/
 
 # Altera Quartus primer
-export QUARTUS_ROOTDIT=/home/macro/intelFPGA/21.1
+export QUARTUS_ROOTDIR=/home/macro/intelFPGA/21.1/quartus
 export LD_LIBRARY_PATH=$QUARTUS_ROOTDIT/linux64:$LD_LIBRARY_PATH
-PATH=$PATH:$QUARTUS_ROOTDIT/quartus/bin
+PATH=$PATH:$QUARTUS_ROOTDIT/bin
 export QSYS_ROOTDIR="/home/macro/intelFPGA/21.1/quartus/sopc_builder/bin"
 
 # DVE
