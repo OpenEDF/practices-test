@@ -151,10 +151,9 @@ export IDENTIFY_HOME=/home/macro/synopsys/synplify_pro_2018/identify/N-2018.03-S
 export LC_HOME=/home/macro/synopsys/lib_com_2018/lc/O-2018.06-SP1/
 
 # Altera Quartus primer
-export QUARTUS_ROOTDIR=/home/macro/intelFPGA/21.1/quartus
-export LD_LIBRARY_PATH=$QUARTUS_ROOTDIT/linux64:$LD_LIBRARY_PATH
-PATH=$PATH:$QUARTUS_ROOTDIT/bin
-export QSYS_ROOTDIR="/home/macro/intelFPGA/21.1/quartus/sopc_builder/bin"
+export QUARTUS_ROOTDIR=/home/macro/intelFPGA/18.0/quartus
+#export LD_LIBRARY_PATH=$QUARTUS_ROOTDIT/linux64:$LD_LIBRARY_PATH
+PATH=$PATH:$QUARTUS_ROOTDIR/bin
 
 # DVE
 PATH=$PATH:$VCS_HOME/gui/dve/bin
@@ -211,6 +210,7 @@ alias identify='identify_debugger'
 
 #LC
 PATH=$PATH:$LC_HOME/bin
+PATH=$PATH:$LC_HOME/admin/install/lc/bin
 alias lc='lc_shell'
 
 # LICENCE
@@ -220,6 +220,7 @@ alias lmg_synopsys='lmgrd -c /home/macro/synopsys/scl_2018/scl/2018.06/admin/lic
 # Vivado
 #source xilinx/Vivado/2019.2/settings64.sh
 alias setvivado='source /home/macro/xilinx/Vivado/2019.2/settings64.sh'
+export XILINX_VIVADO=/home/macro/xilinx/Vivado/2019.2
 
 #Mentor calibre
 #export MGC_HOME=/home/macro/mentor/calibre_2020/aoj_cal_2020.3_16.11
@@ -265,3 +266,5 @@ set history-size 1000
 # display timestamp
 export HISTTIMEFORMAT='%F %T '
 export HISTIGNORE="pwd:ls:ls -ltr:top:jobs:history"
+
+export QSYS_ROOTDIR="/home/macro/intelFPGA/18.0/quartus/bin"
