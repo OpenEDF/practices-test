@@ -1,22 +1,22 @@
-include test1/Makefile.mk
-include test2/Makefile.mk
-
-SRC = $(wildcard test1/*.c) \
-	  $(wildcard test2/*.c) \
-	  $(wildcard *.c)
+TEST1_SRC_DIR = test1
+TEST2_SRC_DIR = test2
+include $(TEST1_SRC_DIR)/Makefile.mk
+include $(TEST2_SRC_DIR)/Makefile.mk
 
 obj += main.o
 
 build: $(obj)
-	@echo "this is a test!\n"
 	@echo $(obj)
-	@echo $(SRC)
+	gcc -o output $(obj)
 
-%.o : test1/%.c
+%.o : $(TEST1_SRC_DIR)/%.c
 	gcc -c $< -o $@
 
-%.o : test2/%.c
+%.o : $(TEST2_SRC_DIR)/%.c
 	gcc -c $< -o $@
+
+main.o : main.c
+	gcc -c main.c -o main.o
 
 clean:
-	rm -rf *.o
+	rm -rf *.o output
