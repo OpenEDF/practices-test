@@ -9,8 +9,15 @@ build: $(obj)
 	@echo $(obj)
 	gcc -o output $(obj)
 
-%.o : $(TEST1_SRC_DIR)/%.c
+%.o : $(TEST1_SRC_DIR)/%.c %.s
+	@echo $<
+	@echo $@
 	gcc -c $< -o $@
+
+%.s : $(TEST1_SRC_DIR)/%.c
+	@echo $<
+	@echo $@
+	gcc -S $< -o $@
 
 %.o : $(TEST2_SRC_DIR)/%.c
 	gcc -c $< -o $@
