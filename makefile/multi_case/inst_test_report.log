@@ -1,0 +1,8 @@
+##
+ auto generated
+##
+
+2023-08-30:13:29:55 test inst: add ... OK 
+2023-08-30:13:29:55 test inst: sub ... OK 
+2023-08-30:13:29:55 test inst: mul ... FAIL
+2023-08-30:13:29:55 test inst: div ... FAIL 
