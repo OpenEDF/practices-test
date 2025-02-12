@@ -62,3 +62,52 @@ while { $index } {
     puts "this loop will forever: $index"
     incr index -1
 }
+
+# list
+set colorlist1 {red green yellow}
+set colorlist2 [list red green blue]
+set colorlist3 [split "red_green_blue" _]
+puts $colorlist1
+puts $colorlist2
+puts $colorlist3
+append colorlist1 " " "blue"
+lappend colorlist1 "orange"
+puts $colorlist1
+puts [llength $colorlist1]
+
+# dictionary
+set colours [dict create coclour1 "black" colour2 "white"]
+foreach item [dict keys $colours] {
+    set value [dict get $colours $item]
+    puts $value
+}
+set ret [dict exists $colours coclour1]
+puts $ret
+
+# procdedures
+proc helloworld {} {
+    puts "Hello World!"
+}
+
+proc add {a b} {
+    return [expr $a + $b]
+}
+
+proc add_1 {a {b 100}} {
+    return [expr $a + $b]
+}
+
+proc add_2 {a {b 100}} {
+set c 10
+    if {$a < 10} {
+        return [expr 10 + $c]
+    }
+    return [expr $a + $b]
+}
+
+# main
+helloworld
+puts [add 10 30]
+set c 20
+puts [add_1 9]
+puts "c:$c"
