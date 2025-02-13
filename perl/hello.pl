@@ -83,3 +83,37 @@ $size = @names;
 
 print "Given names are : @copy\n";
 print "Number of names are : $size\n";
+
+# decision making
+$a = 10;
+if ($a % 2 == 0) {
+    printf "Even Number\n";
+}
+
+unless ($a != 10) {
+    printf "a is not equal to 10\n";
+} else {
+    printf "a is equal to 10\n";
+}
+
+# loop
+$count = 4;
+print("while loop:\n");
+while ($count >= 0) {
+    $count = $count - 1;
+    print("this is a test!\n")
+}
+
+# subroutines
+sub hello {
+    $count = $_[0];
+    print("while loop:\n");
+    while ($count >= 0) {
+        $count = $count - 1;
+        print("test subroutines!\n")
+    }
+}
+
+# main function call
+hello(10);
+
